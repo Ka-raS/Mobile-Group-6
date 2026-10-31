@@ -1,1 +1,31 @@
 package com.group6.group6application.activities
+
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.group6.group6application.activities.navigation.PlaceholderScreen
+import com.group6.group6application.activities.navigation.Routes
+
+fun NavGraphBuilder.studentGraph(navController: NavHostController, onLogout: () -> Unit) {
+    composable(Routes.STUDENT_HOME) {
+        PlaceholderScreen(
+            "Student Home",
+            "My schedules" to { navController.navigate(Routes.STUDENT_SCHEDULES) },
+            "Book a session" to { navController.navigate(Routes.studentScheduleForm()) },
+            "Calendar" to { navController.navigate(Routes.STUDENT_CALENDAR) },
+            "Logout" to onLogout,
+        )
+    }
+    composable(Routes.STUDENT_SCHEDULES) {
+        PlaceholderScreen("My schedules", "Book" to { navController.navigate(Routes.studentScheduleForm()) })
+    }
+    composable(Routes.STUDENT_SCHEDULE_FORM, listOf(navArgument("id") { type = NavType.IntType })) {
+        val id = it.arguments?.getInt("id") ?: 0
+        PlaceholderScreen("Schedule form (id=$id)", "Back" to { navController.popBackStack() })
+    }
+    composable(Routes.STUDENT_CALENDAR) {
+        CalendarActivity(onBack = { navController.popBackStack() })
+    }
+}

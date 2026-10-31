@@ -1,4 +1,4 @@
-package com.group6.group6application.ui.navigation
+package com.group6.group6application.activities.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -8,9 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.group6.group6application.dal.SessionManager
 import com.group6.group6application.entities.Role
-import com.group6.group6application.ui.admin.adminGraph
-import com.group6.group6application.ui.auth.LoginScreen
-import com.group6.group6application.ui.student.studentGraph
+import com.group6.group6application.activities.adminGraph
+import com.group6.group6application.activities.LoginActivity
+import com.group6.group6application.activities.studentGraph
 
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController()) {
@@ -27,7 +27,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
 
     NavHost(navController = navController, startDestination = start) {
         composable(Routes.LOGIN) {
-            LoginScreen(onLoggedIn = { role ->
+            LoginActivity(onLoggedIn = { role ->
                 val home = if (role == Role.ADMIN) Routes.ADMIN_HOME else Routes.STUDENT_HOME
                 navController.navigate(home) { popUpTo(0) }
             })

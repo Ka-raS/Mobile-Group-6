@@ -26,4 +26,7 @@ interface AccountDao {
 
     @Query("SELECT * FROM Account WHERE username = :username LIMIT 1")
     suspend fun getByUsername(username: String): Account?
+
+    @Query("SELECT COUNT(*) FROM Account")
+    suspend fun count(): Int
 }

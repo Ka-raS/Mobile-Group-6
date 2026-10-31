@@ -1,4 +1,4 @@
-package com.group6.group6application.ui.theme
+package com.group6.group6application.activities.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
