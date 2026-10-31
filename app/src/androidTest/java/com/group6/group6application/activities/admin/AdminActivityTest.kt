@@ -8,7 +8,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-class AdminScreenTest {
+class AdminActivityTest {
     @get:Rule val compose = createComposeRule()
 
     @Test
@@ -16,7 +16,7 @@ class AdminScreenTest {
         var action = ""
         compose.setContent {
             Group6ApplicationTheme {
-                AdminHomeScreen({ action = "students" }, { action = "subjects" }, { action = "logout" })
+                AdminHomeActivity({ action = "students" }, { action = "subjects" }, { action = "logout" })
             }
         }
         compose.onNodeWithText("Student Management").performClick()
@@ -70,3 +70,4 @@ class AdminScreenTest {
         }
     }
 }
+

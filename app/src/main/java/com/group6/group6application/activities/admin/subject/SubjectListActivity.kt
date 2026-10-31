@@ -8,7 +8,7 @@ import com.group6.group6application.activities.admin.*
 import com.group6.group6application.activities.theme.Group6ApplicationTheme
 
 @Composable
-fun SubjectListScreen(onBack: () -> Unit, onAdd: () -> Unit, onEdit: (Int) -> Unit, model: AdminViewModel = viewModel()) {
+fun SubjectListActivity(onBack: () -> Unit, onAdd: () -> Unit, onEdit: (Int) -> Unit, model: AdminViewModel = viewModel()) {
     val subjects by model.subjects.collectAsState()
     var query by rememberSaveable { mutableStateOf("") }
     val records = remember(subjects) {
@@ -40,3 +40,4 @@ private fun SubjectsPreview() {
         SubjectListContent(listOf(AdminRecord(1, "Mobile Programming", "MOB101 • 3 credits", emptyList())), "", {}, false, null, {}, {}, {}, {})
     }
 }
+

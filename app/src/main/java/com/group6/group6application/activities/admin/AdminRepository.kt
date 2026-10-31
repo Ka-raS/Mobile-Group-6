@@ -116,3 +116,4 @@ class AdminRepository(private val db: AppDB) {
         db.subjectDao().delete(subject)
     }
 }
+

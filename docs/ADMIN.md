@@ -14,9 +14,9 @@
 ## Cấu trúc
 
 - `activities/AdminActivity.kt`: sử dụng nguyên các route được chốt trong `Routes`.
-- `activities/admin/AdminHomeScreen.kt`: menu Admin.
-- `activities/admin/student/`: danh sách và form sinh viên.
-- `activities/admin/subject/`: danh sách và form môn học.
+- `activities/admin/AdminHomeActivity.kt`: menu Admin.
+- `activities/admin/student/`: `StudentListActivity.kt` và `StudentFormActivity.kt`.
+- `activities/admin/subject/`: `SubjectListActivity.kt` và `SubjectFormActivity.kt`.
 - `activities/admin/AdminComponents.kt`: thành phần danh sách, chi tiết, xác nhận xóa, form dùng chung.
 - `activities/admin/AdminViewModel.kt`: trạng thái tải/lưu/lỗi, giữ nội dung form qua xoay màn hình; chặn nhấn lưu nhiều lần.
 - `activities/admin/AdminRepository.kt`: kiểm tra dữ liệu và thực hiện giao dịch qua DAO hiện có.
@@ -51,7 +51,7 @@ Người 4 cần bảo đảm worker thông báo bỏ qua lịch đã bị xóa 
 .\gradlew.bat :app:connectedDebugAndroidTest
 ```
 
-Lệnh thứ hai cần emulator hoặc thiết bị Android đã kết nối. `AdminRepositoryTest` dùng database Room trong RAM, không thay đổi dữ liệu demo của ứng dụng. Các ca kiểm thử bao gồm transaction rollback khi insert hồ sơ thất bại, mã/tài khoản trùng, đổi mật khẩu, sửa/xóa và CASCADE. `AdminScreenTest` kiểm tra menu, tìm kiếm không dấu, mở chi tiết và xác nhận xóa.
+Lệnh thứ hai cần emulator hoặc thiết bị Android đã kết nối. `AdminRepositoryTest` dùng database Room trong RAM, không thay đổi dữ liệu demo của ứng dụng. Các ca kiểm thử bao gồm transaction rollback khi insert hồ sơ thất bại, mã/tài khoản trùng, đổi mật khẩu, sửa/xóa và CASCADE. `AdminActivityTest` kiểm tra menu, tìm kiếm không dấu, mở chi tiết và xác nhận xóa.
 
 Theo quy trình README, commit các file thuộc Admin, test Admin và tài liệu này trên branch cá nhân, sau đó mở PR để người 1 tích hợp. Không đưa những thay đổi sẵn có thuộc Login, Student hoặc cấu hình IDE vào commit Admin.
 

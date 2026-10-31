@@ -9,7 +9,7 @@ import com.group6.group6application.activities.admin.*
 import com.group6.group6application.activities.theme.Group6ApplicationTheme
 
 @Composable
-fun SubjectFormScreen(id: Int, onBack: () -> Unit, model: AdminViewModel = viewModel()) {
+fun SubjectFormActivity(id: Int, onBack: () -> Unit, model: AdminViewModel = viewModel()) {
     LaunchedEffect(id) { model.loadSubject(id) }
     LaunchedEffect(model.saved) { if (model.saved) onBack() }
     SubjectFormContent(id, model.subjectInput, model::editSubject, model.busy, model.loaded, model.error, onBack) {
@@ -34,3 +34,4 @@ private fun SubjectFormContent(
 private fun SubjectFormPreview() {
     Group6ApplicationTheme(dynamicColor = false) { SubjectFormContent(0, SubjectInput(), {}, false, true, null, {}, {}) }
 }
+

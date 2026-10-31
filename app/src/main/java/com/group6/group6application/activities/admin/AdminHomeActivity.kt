@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.group6.group6application.activities.theme.Group6ApplicationTheme
 
 @Composable
-fun AdminHomeScreen(onStudents: () -> Unit, onSubjects: () -> Unit, onLogout: () -> Unit) {
+fun AdminHomeActivity(onStudents: () -> Unit, onSubjects: () -> Unit, onLogout: () -> Unit) {
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -37,5 +37,6 @@ fun AdminHomeScreen(onStudents: () -> Unit, onSubjects: () -> Unit, onLogout: ()
 @Preview(showBackground = true)
 @Composable
 private fun AdminHomePreview() {
-    Group6ApplicationTheme(dynamicColor = false) { AdminHomeScreen({}, {}, {}) }
+    Group6ApplicationTheme(dynamicColor = false) { AdminHomeActivity({}, {}, {}) }
 }
+

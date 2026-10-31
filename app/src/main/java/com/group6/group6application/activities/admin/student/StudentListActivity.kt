@@ -8,7 +8,7 @@ import com.group6.group6application.activities.admin.*
 import com.group6.group6application.activities.theme.Group6ApplicationTheme
 
 @Composable
-fun StudentListScreen(onBack: () -> Unit, onAdd: () -> Unit, onEdit: (Int) -> Unit, model: AdminViewModel = viewModel()) {
+fun StudentListActivity(onBack: () -> Unit, onAdd: () -> Unit, onEdit: (Int) -> Unit, model: AdminViewModel = viewModel()) {
     val students by model.students.collectAsState()
     var query by rememberSaveable { mutableStateOf("") }
     val records = remember(students) {
@@ -40,3 +40,4 @@ private fun StudentsPreview() {
         StudentListContent(listOf(AdminRecord(1, "Nguyễn Văn An", "SV001 • an@example.com", emptyList())), "", {}, false, null, {}, {}, {}, {})
     }
 }
+

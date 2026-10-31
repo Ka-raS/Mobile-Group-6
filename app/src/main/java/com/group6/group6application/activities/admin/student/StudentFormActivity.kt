@@ -10,7 +10,7 @@ import com.group6.group6application.activities.admin.*
 import com.group6.group6application.activities.theme.Group6ApplicationTheme
 
 @Composable
-fun StudentFormScreen(id: Int, onBack: () -> Unit, model: AdminViewModel = viewModel()) {
+fun StudentFormActivity(id: Int, onBack: () -> Unit, model: AdminViewModel = viewModel()) {
     LaunchedEffect(id) { model.loadStudent(id) }
     LaunchedEffect(model.saved) { if (model.saved) onBack() }
     StudentFormContent(id, model.studentInput, model::editStudent, model.busy, model.loaded, model.error, onBack) {
@@ -42,3 +42,4 @@ private fun StudentFormContent(
 private fun StudentFormPreview() {
     Group6ApplicationTheme(dynamicColor = false) { StudentFormContent(0, StudentInput(), {}, false, true, null, {}, {}) }
 }
+
