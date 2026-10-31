@@ -22,12 +22,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
-/**
- * Stateless landing screen for the student area.
- *
- * Navigation and logout behavior are supplied by the caller so this screen can be previewed and
- * tested without a NavController or session dependency.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentHomeActivity(
@@ -43,7 +37,7 @@ fun StudentHomeActivity(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Student Home",
+                        text = "Trang sinh viên",
                         modifier = Modifier.testTag("student_home_title"),
                     )
                 },
@@ -59,14 +53,14 @@ fun StudentHomeActivity(
             horizontalAlignment = Alignment.Start,
         ) {
             Text(
-                text = if (username.isBlank()) "Welcome!" else "Welcome, $username!",
+                text = if (username.isBlank()) "Xin chào!" else "Xin chào, $username!",
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
                     .testTag("student_home_welcome")
-                    .semantics { contentDescription = "Student welcome message" },
+                    .semantics { contentDescription = "Lời chào sinh viên" },
             )
             Text(
-                text = "What would you like to do?",
+                text = "Bạn muốn làm gì?",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -74,20 +68,20 @@ fun StudentHomeActivity(
             Spacer(modifier = Modifier.height(8.dp))
 
             HomeActionButton(
-                label = "My Schedules",
-                contentDescription = "Open my schedules",
+                label = "Lịch học của tôi",
+                contentDescription = "Mở lịch học của tôi",
                 testTag = "student_home_schedules_button",
                 onClick = onSchedules,
             )
             HomeActionButton(
-                label = "Book a Session",
-                contentDescription = "Book a study session",
+                label = "Đặt lịch học",
+                contentDescription = "Đặt một buổi học",
                 testTag = "student_home_book_button",
                 onClick = onBook,
             )
             HomeActionButton(
-                label = "Calendar",
-                contentDescription = "Open calendar",
+                label = "Lịch",
+                contentDescription = "Mở lịch",
                 testTag = "student_home_calendar_button",
                 onClick = onCalendar,
             )
@@ -99,9 +93,9 @@ fun StudentHomeActivity(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("student_home_logout_button")
-                    .semantics { contentDescription = "Log out" },
+                    .semantics { contentDescription = "Đăng xuất" },
             ) {
-                Text("Logout")
+                Text("Đăng xuất")
             }
         }
     }

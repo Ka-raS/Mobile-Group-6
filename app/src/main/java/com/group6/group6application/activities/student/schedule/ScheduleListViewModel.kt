@@ -78,7 +78,7 @@ class ScheduleListViewModel(application: Application) : AndroidViewModel(applica
                                 statusFilter = parameters.status,
                                 isLoading = false,
                                 sessionValid = true,
-                                errorMessage = "Unable to load schedules.",
+                                errorMessage = "Không thể tải danh sách lịch học.",
                             ),
                         )
                     }
@@ -100,28 +100,28 @@ class ScheduleListViewModel(application: Application) : AndroidViewModel(applica
     fun onStatusFilterChange(value: String?) {
         val normalized = value?.takeUnless { it.equals("All", ignoreCase = true) }
         if (normalized != null && normalized !in ScheduleStatus.ALL) {
-            _events.tryEmit(ScheduleListEvent.ShowMessage("Unknown schedule status."))
+            _events.tryEmit(ScheduleListEvent.ShowMessage("Trạng thái lịch học không hợp lệ."))
             return
         }
         statusFilter.value = normalized
     }
 
     fun deleteSchedule(scheduleId: Int) {
-        runMutation("Unable to delete the schedule.") {
+        runMutation("Không thể xóa lịch học.") {
             val schedule = findOwnedSchedule(scheduleId) ?: return@runMutation
             scheduleDao.delete(schedule)
-            NotificationScheduler.cancel(getApplication(), schedule.id)
-            _events.emit(ScheduleListEvent.ShowMessage("Schedule deleted."))
+            NotificationScheduler.notifyDeleted(getApplication(), schedule)
+            _events.emit(ScheduleListEvent.ShowMessage("Đã xóa lịch học."))
         }
     }
 
     fun changeStatus(scheduleId: Int, newStatus: String) {
         if (newStatus !in ScheduleStatus.ALL) {
-            _events.tryEmit(ScheduleListEvent.ShowMessage("Unknown schedule status."))
+            _events.tryEmit(ScheduleListEvent.ShowMessage("Trạng thái lịch học không hợp lệ."))
             return
         }
 
-        runMutation("Unable to change the schedule status.") {
+        runMutation("Không thể đổi trạng thái lịch học.") {
             val schedule = findOwnedSchedule(scheduleId) ?: return@runMutation
             if (schedule.status == newStatus) return@runMutation
 
@@ -131,12 +131,8 @@ class ScheduleListViewModel(application: Application) : AndroidViewModel(applica
             }
 
             scheduleDao.updateStatus(schedule.id, newStatus)
-            if (newStatus == ScheduleStatus.CANCELLED) {
-                NotificationScheduler.cancel(getApplication(), schedule.id)
-            } else {
-                NotificationScheduler.schedule(getApplication(), schedule.copy(status = newStatus))
-            }
-            _events.emit(ScheduleListEvent.ShowMessage("Status changed to $newStatus."))
+            NotificationScheduler.notifyChanged(getApplication(), schedule.copy(status = newStatus))
+            _events.emit(ScheduleListEvent.ShowMessage("Đã đổi trạng thái thành ${ScheduleStatus.label(newStatus)}."))
         }
     }
 
@@ -161,17 +157,17 @@ class ScheduleListViewModel(application: Application) : AndroidViewModel(applica
             return null
         }
         if (scheduleId <= 0) {
-            _events.emit(ScheduleListEvent.ShowMessage("Schedule not found."))
+            _events.emit(ScheduleListEvent.ShowMessage("Không tìm thấy lịch học."))
             return null
         }
 
         val schedule = scheduleDao.getById(scheduleId)
         if (schedule == null) {
-            _events.emit(ScheduleListEvent.ShowMessage("Schedule not found."))
+            _events.emit(ScheduleListEvent.ShowMessage("Không tìm thấy lịch học."))
             return null
         }
         if (schedule.studentId != studentId) {
-            _events.emit(ScheduleListEvent.ShowMessage("You can only manage your own schedules."))
+            _events.emit(ScheduleListEvent.ShowMessage("Bạn chỉ được quản lý lịch học của mình."))
             return null
         }
         return schedule
@@ -187,7 +183,7 @@ class ScheduleListViewModel(application: Application) : AndroidViewModel(applica
         ) > 0
 
     private companion object {
-        const val NO_STUDENT_SESSION = "No active student session."
-        const val OVERLAP_MESSAGE = "This schedule overlaps another active schedule."
+        const val NO_STUDENT_SESSION = "Không có phiên đăng nhập sinh viên."
+        const val OVERLAP_MESSAGE = "Lịch học này bị trùng giờ với một lịch học khác."
     }
 }

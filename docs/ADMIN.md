@@ -31,18 +31,18 @@ Theo khóa ngoại `CASCADE` của bộ khung:
 - Xóa môn học sẽ xóa môn cùng mọi lịch học liên quan, giữ nguyên các sinh viên/tài khoản.
 - Giao diện luôn hiển thị cảnh báo cụ thể và yêu cầu xác nhận trước khi xóa.
 
-Người 4 cần bảo đảm worker thông báo bỏ qua lịch đã bị xóa khi đọc lại database, vì Admin có thể xóa lịch gián tiếp qua khóa ngoại. Phần notification hiện tại vẫn là stub của bộ khung; module Admin không thay đổi phần này.
+Người 4 cần bảo đảm worker thông báo bỏ qua lịch đã bị xóa khi đọc lại database, vì Admin có thể xóa lịch gián tiếp qua khóa ngoại. Worker hiện đã đọc lại Room trước khi gửi nên không báo nhầm lịch đã bị xóa.
 
 ## Demo và kiểm tra thủ công
 
 1. Đăng nhập `admin/admin` trên database mới được seed.
-2. Vào **Student Management** → **Add New**. Nhập `SV002`, họ tên, email/điện thoại hợp lệ, username `student2`, password `123456` → **Save**.
-3. Tìm bằng mã, tên không dấu, email hoặc số điện thoại; mở **Details** và **Edit**. Xoay máy lúc đang nhập để kiểm tra nội dung form.
+2. Vào **Quản lý sinh viên** → **Thêm mới**. Nhập `SV002`, họ tên, email/điện thoại hợp lệ, username `student2`, password `123456` → **Lưu**.
+3. Tìm bằng mã, tên không dấu, email hoặc số điện thoại; mở **Chi tiết** và **Sửa**. Xoay máy lúc đang nhập để kiểm tra nội dung form.
 4. Thử tạo trùng mã hoặc username; ứng dụng phải báo lỗi và không tạo tài khoản thừa.
-5. Sửa tên đăng nhập; để trống mật khẩu → **Save**. **Logout** và đăng nhập bằng tài khoản mới để kiểm tra role Student. Đổi mật khẩu và kiểm tra mật khẩu cũ không còn đăng nhập được.
-6. Đăng nhập lại Admin; vào **Subject Management**, thêm môn học, tìm kiếm, xem chi tiết và sửa số tín chỉ. Thử tín chỉ `0`, số âm, số thập phân và mã môn trùng; phải báo lỗi.
-7. Nhấn **Delete** → **Cancel** để kiểm tra hủy thao tác, sau đó xác nhận **Delete** với dữ liệu demo. Kiểm tra các bản ghi liên quan theo hành vi CASCADE ở trên.
-8. **Logout**; nút Back không quay lại màn Admin. Đóng/mở ứng dụng để kiểm tra dữ liệu Room còn lưu.
+5. Sửa tên đăng nhập; để trống mật khẩu → **Lưu**. **Đăng xuất** và đăng nhập bằng tài khoản mới để kiểm tra role Student. Đổi mật khẩu và kiểm tra mật khẩu cũ không còn đăng nhập được.
+6. Đăng nhập lại Admin; vào **Quản lý môn học**, thêm môn học, tìm kiếm, xem chi tiết và sửa số tín chỉ. Thử tín chỉ `0`, số âm, số thập phân và mã môn trùng; phải báo lỗi.
+7. Nhấn **Xóa** → **Hủy** để kiểm tra hủy thao tác, sau đó xác nhận **Xóa** với dữ liệu demo. Kiểm tra các bản ghi liên quan theo hành vi CASCADE ở trên.
+8. **Đăng xuất**; nút Back không quay lại màn Admin. Đóng/mở ứng dụng để kiểm tra dữ liệu Room còn lưu.
 
 ## Kiểm thử tự động
 

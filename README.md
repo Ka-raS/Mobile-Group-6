@@ -21,20 +21,45 @@ Scoring: The score is based on the time taken to complete the project. The less 
 
 ---
 
-# Phân công công việc (4 người)
+# Ứng dụng quản lý và đặt lịch học
 
-Người 1 làm phần nền trước (~30–45 phút), push lên `main`, sau đó 3 người còn lại pull về và làm song song.
+Kotlin, Jetpack Compose, Room, SharedPreferences, WorkManager. Giao diện tiếng Việt.
 
-## 👤 Người 1 — Core + Login (làm trước)
-- Thêm dependencies: Room + KSP, Navigation Compose, WorkManager
-- `entities/`: 4 Entity (`Account`, `Student`, `Subject`, `StudySchedule`) và `ScheduleWithSubject` (lịch kèm tên môn)
-- `dal/`: `AppDB`, các DAO, `SessionManager`, seed sẵn dữ liệu bằng `AppDB.seedIfEmpty()`
-- Viết sẵn query kiểm tra trùng lịch `StudyScheduleDao.countOverlap(studentId, date, start, end, excludeId)`:
-  `SELECT COUNT(*) ... WHERE studentId=:sid AND studyDate=:d AND status!='Cancelled' AND startTime < :end AND endTime > :start AND id != :excludeId`
-- `SessionManager` lưu account đang đăng nhập bằng SharedPreferences
-- `activities/LoginActivity`, sau khi login thì chuyển sang màn Admin hoặc Student theo role
-- `NavHost` với tên route chốt sẵn từ đầu để mọi người tự gắn màn của mình vào
-- Quản lý repo GitHub (branch protection, review và merge PR), lo phần tích hợp cuối
+## Chạy thử
+
+```bash
+./gradlew :app:assembleDebug :app:testDebugUnitTest
+./gradlew :app:connectedDebugAndroidTest
+```
+
+Windows dùng `.\gradlew.bat`. Lệnh thứ hai cần máy ảo hoặc điện thoại đang kết nối.
+
+Tài khoản có sẵn (tự seed ở lần đăng nhập đầu tiên):
+
+| Tài khoản | Mật khẩu | Vai trò |
+|---|---|---|
+| `admin` | `admin` | Admin |
+| `student1` | `123456` | Student, hồ sơ SV001 |
+
+Có sẵn 3 môn MOB101, DBI202, PRF192. Đổi Entity mà app crash thì gỡ app hoặc Clear data rồi chạy lại.
+
+## Yêu cầu và nơi cài đặt
+
+| Yêu cầu | Cài đặt |
+|---|---|
+| 4 bảng | `entities/` (`Account`, `Student`, `Subject`, `StudySchedule`), khóa ngoại `CASCADE` |
+| Login 2 role | `activities/LoginActivity.kt`, `AppNavHost` chuyển sang Admin hoặc Student theo role |
+| Lưu đăng nhập bằng SharedPreferences | `dal/SessionManager.kt` |
+| Lưu dữ liệu bằng Room | `dal/AppDB.kt` và các DAO |
+| Quản lý sinh viên | `activities/admin/student/`, thêm sinh viên tạo luôn Account role Student trong một transaction |
+| Quản lý môn học | `activities/admin/subject/` |
+| Quản lý lịch học cá nhân | `activities/student/schedule/ScheduleListActivity.kt` (xem, tìm, sửa, xóa) |
+| Đặt lịch | `ScheduleFormActivity.kt`: chọn môn, ngày, giờ bắt đầu và kết thúc, địa điểm |
+| Chặn trùng lịch | `StudyScheduleDao.countOverlap()`, bỏ qua lịch đã hủy |
+| Trạng thái Pending, Confirmed, Cancelled | Lọc và đổi trạng thái trong danh sách lịch, hiển thị "Chờ xác nhận", "Đã xác nhận", "Đã hủy" |
+| Lịch ngày, tuần, tháng | `activities/calendar/CalendarViewActivity.kt` |
+| Thông báo | `notification/`: nhắc trước giờ học 30 phút, báo khi sửa, đổi trạng thái hoặc xóa lịch |
+| GitHub | Mỗi người một branch, merge qua PR |
 
 ## Cấu trúc project
 
@@ -42,96 +67,50 @@ Người 1 làm phần nền trước (~30–45 phút), push lên `main`, sau đ
 com.group6.group6application
 ├── activities
 │    ├── LoginActivity.kt
-│    ├── AdminActivity.kt       (Người 2)
-│    ├── ScheduleActivity.kt    (Người 3)
-│    ├── CalendarActivity.kt    (Người 4)
-│    ├── navigation/            Routes, AppNavHost, PlaceholderScreen
+│    ├── AdminActivity.kt            graph Admin
+│    ├── ScheduleActivity.kt         graph Student
+│    ├── CalendarActivity.kt
+│    ├── admin/                      AdminHomeActivity, AdminComponents, AdminViewModel, AdminRepository
+│    │    ├── student/               StudentListActivity, StudentFormActivity
+│    │    └── subject/               SubjectListActivity, SubjectFormActivity
+│    ├── student/                    StudentHomeActivity
+│    │    └── schedule/              ScheduleListActivity, ScheduleFormActivity, ViewModel, validation
+│    ├── calendar/                   CalendarViewActivity, CalendarDates
+│    ├── navigation/                 Routes, AppNavHost
 │    └── theme/
-├── dal
-│    ├── AppDB.kt
-│    ├── AccountDao.kt
-│    ├── StudentDao.kt
-│    ├── SubjectDao.kt
-│    ├── StudyScheduleDao.kt
-│    └── SessionManager.kt
-├── entities
-│    ├── Account.kt              (kèm Role)
-│    ├── Student.kt
-│    ├── Subject.kt
-│    ├── StudySchedule.kt        (kèm ScheduleStatus)
-│    └── ScheduleWithSubject.kt
-├── notification
-│    └── NotificationScheduler.kt   (Người 4)
+├── dal                              AppDB, AccountDao, StudentDao, SubjectDao, StudyScheduleDao, SessionManager
+├── entities                         Account (kèm Role, ScheduleStatus), Student, Subject, StudySchedule, ScheduleWithSubject
+├── notification                     NotificationScheduler, StudyNotificationWorker, StudyNotifications, ReminderTiming, StudentNotificationSetup
 └── MainActivity.kt
 ```
 
-- Lấy DB: `AppDB.get(context).studentDao()`
-- Lấy người đang đăng nhập: `SessionManager(context).studentId` (Admin là `-1`)
-- Tài khoản test: `admin/admin`, `student1/123456` (student SV001), 3 môn MOB101, DBI202, PRF192
-- Đổi Entity mà app crash thì gỡ app hoặc Clear data rồi chạy lại
+Quy ước:
+- Màn hình nằm trong `activities/` và có hậu tố `Activity`.
+- Không comment trong code.
+- Ngày lưu `"yyyy-MM-dd"`, giờ lưu `"HH:mm"`. Trạng thái lưu `Pending`, `Confirmed`, `Cancelled`, hiển thị qua `ScheduleStatus.label()`.
 
-## 👤 Người 2 — Admin
-- `activities/admin/student/`: thêm, sửa, xóa, tìm kiếm, xem Student. Khi thêm Student thì tạo luôn Account role Student
-- `activities/admin/subject/`: thêm, sửa, xóa, tìm kiếm, xem Subject
-- `activities/AdminActivity`: gắn các màn vào graph, màn Admin Home (menu dẫn tới 2 phần trên, có nút logout)
+## Thông báo
 
-## 👤 Người 3 — Lịch học của Student
-- `activities/student/schedule/`: danh sách, tìm kiếm, sửa, xóa lịch cá nhân
-- Form đặt lịch: chọn Subject (dropdown), DatePicker, TimePicker bắt đầu và kết thúc, nhập location
-- Kiểm tra trùng giờ bằng query của Người 1, nếu trùng thì báo lỗi
-- Quản lý trạng thái Pending, Confirmed, Cancelled (lọc theo trạng thái, đổi trạng thái)
-- `activities/ScheduleActivity`: gắn các màn vào graph, màn Student Home
+- Tạo lịch: `NotificationScheduler.schedule(context, schedule)` sau khi insert, truyền đúng id Room trả về.
+- Sửa lịch hoặc đổi trạng thái: `NotificationScheduler.notifyChanged(context, schedule)`.
+- Xóa lịch: `NotificationScheduler.notifyDeleted(context, oldSchedule)`.
+- Logout hủy hết nhắc. Worker đọc lại Room trước khi gửi nên lịch đã xóa hoặc đã hủy không bị báo nhầm.
+- Android 13+ hỏi quyền thông báo ở lần đầu vào màn Student. Nếu từ chối, bật lại trong Cài đặt ứng dụng.
 
-## 👤 Người 4 — Calendar + Notification
-- `activities/CalendarActivity`: chuyển giữa 3 chế độ xem Ngày, Tuần, Tháng
-- `notification/`: tạo notification channel, xin quyền `POST_NOTIFICATIONS`, dùng WorkManager hẹn thông báo trước buổi học (ví dụ trước 30 phút)
-- Viết hàm `NotificationScheduler.schedule(schedule)` và `cancel(id)` để Người 3 gọi khi tạo, sửa, hủy lịch (thông báo khi lịch thay đổi)
-- Viết README và chuẩn bị demo
+## Kịch bản demo
 
-## Quy tắc chung
-- Mỗi người làm trên branch riêng (`feat/core`, `feat/admin`, `feat/schedule`, `feat/calendar`), merge qua PR vào `main`
-- Chỉ Người 1 được sửa Entity, DAO và `build.gradle`. Ai cần thêm thì nhắn Người 1
-- Ngày lưu dạng `"yyyy-MM-dd"`, giờ lưu dạng `"HH:mm"` (chuỗi so sánh trực tiếp được, đỡ phải convert)
+1. Đăng nhập `admin/admin`. Vào Quản lý sinh viên, thêm `SV002` với tài khoản `student2/123456`. Thử tìm kiếm, xem chi tiết, sửa. Vào Quản lý môn học, thêm, sửa, tìm một môn. Đăng xuất.
+2. Đăng nhập `student2/123456`, cho phép thông báo. Đặt một lịch bắt đầu sau 10 phút, sẽ có thông báo nhắc ngay.
+3. Đặt một lịch khác trùng giờ để thấy báo lỗi trùng lịch.
+4. Trong Lịch học của tôi: tìm kiếm, lọc theo trạng thái, đổi trạng thái, sửa, xóa. Mỗi thao tác sửa, đổi trạng thái, xóa đều có thông báo.
+5. Mở Lịch, chuyển Ngày, Tuần, Tháng.
+6. Đóng và mở lại app: vẫn đăng nhập và dữ liệu còn nguyên.
 
-## Calendar và Notification đã tích hợp — Người 4
+## Phân công
 
-- Điểm vào là composable `activities/CalendarActivity.kt`, được gọi từ `activities/ScheduleActivity.kt`. Giao diện và cách tính khoảng ngày nằm trong `activities/calendar/CalendarScreen.kt` và `CalendarDates.kt`.
-- Toàn bộ navigation và theme dùng `activities/navigation/` và `activities/theme/`. Các bản sao trong package `ui/` cũ đã được bỏ.
-- Calendar đọc `StudyScheduleDao.getInRange()` theo `SessionManager.studentId`, hiển thị Ngày/Tuần/Tháng và tự cập nhật từ Room.
-- `notification/StudentNotificationSetup.kt` được gắn vào `activities/navigation/AppNavHost.kt`: tạo channel, hỏi quyền thông báo trên Android 13+, khôi phục nhắc khi đăng nhập/quay lại app và sau khi cấp quyền. Logout hủy các nhắc và thông báo đang hiển thị.
-- Nhắc lịch `Pending`/`Confirmed` trước 30 phút. Nếu còn dưới 30 phút thì nhắc ngay; lịch đã bắt đầu, đã xóa hoặc `Cancelled` không phát nhắc cũ. Worker đọc lại Room và kiểm tra đúng sinh viên trước khi gửi.
-- Mỗi lịch có một công việc WorkManager riêng; sửa sẽ thay thế nhắc cũ. Múi giờ dùng theo thiết bị. WorkManager có thể gửi muộn do điều kiện hệ thống, không phải báo thức chính xác đến từng phút.
-- Nếu từ chối quyền thông báo, có thể bật lại trong Cài đặt ứng dụng → Thông báo.
-
-### Người 3 gọi sau khi ghi Room thành công
-
-Các lệnh DAO chạy trong coroutine; truyền đúng ID lịch do Room cấp.
-
-```kotlin
-// Tạo lịch:
-val id = db.studyScheduleDao().insert(draft).toInt()
-NotificationScheduler.schedule(context, draft.copy(id = id))
-
-// Sửa thông tin hoặc đổi trạng thái (kể cả Cancelled):
-db.studyScheduleDao().update(updated)
-NotificationScheduler.notifyChanged(context, updated)
-
-// Xóa lịch, giữ bản ghi cũ để mô tả thông báo:
-db.studyScheduleDao().delete(oldSchedule)
-NotificationScheduler.notifyDeleted(context, oldSchedule)
-
-// Chỉ hủy nhắc, không phát thông báo thay đổi:
-NotificationScheduler.cancel(context, scheduleId)
-```
-
-`notifyChanged()` tự đặt lại/hủy nhắc và thông báo thay đổi. `schedule()` chỉ đặt nhắc. Các hàm trả về `Operation`, không cần chờ chặn UI. Form đặt/sửa lịch vẫn là khung để Người 3 hoàn thiện và nối các lệnh trên.
-
-### Kiểm tra và demo
-
-```powershell
-.\gradlew.bat :app:assembleDebug :app:testDebugUnitTest
-# Cần kết nối máy ảo hoặc điện thoại:
-.\gradlew.bat :app:connectedDebugAndroidTest :app:lintDebug
-```
-
-Đăng nhập `student1/123456` → Calendar. Database ban đầu chưa có lịch mẫu. Sau khi tích hợp form, tạo lịch bắt đầu sau 5–10 phút để thử nhắc ngay; sửa/hủy/xóa lịch để thử thông báo thay đổi và hủy nhắc.
+| Người | Phần việc |
+|---|---|
+| Người 1 | Core: entities, DAO, AppDB, SessionManager, Login, Navigation, tích hợp cuối |
+| Người 2 | Admin: quản lý sinh viên, môn học (`docs/ADMIN.md`) |
+| Người 3 | Student: trang Student, danh sách, đặt lịch, trùng lịch, trạng thái |
+| Người 4 | Calendar và Notification |

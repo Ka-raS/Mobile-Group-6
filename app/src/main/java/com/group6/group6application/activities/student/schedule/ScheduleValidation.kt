@@ -56,31 +56,31 @@ fun validateScheduleForm(
 ): ScheduleValidationResult {
     val normalizedLocation = location.trim()
     val dateError = when {
-        studyDate.isBlank() -> "Select a date."
-        !isValidScheduleDate(studyDate) -> "Use a valid date in yyyy-MM-dd format."
+        studyDate.isBlank() -> "Hãy chọn ngày học."
+        !isValidScheduleDate(studyDate) -> "Ngày không hợp lệ, dùng định dạng yyyy-MM-dd."
         else -> null
     }
     val startError = when {
-        startTime.isBlank() -> "Select a start time."
-        !isValidScheduleTime(startTime) -> "Use a valid start time in HH:mm format."
+        startTime.isBlank() -> "Hãy chọn giờ bắt đầu."
+        !isValidScheduleTime(startTime) -> "Giờ bắt đầu không hợp lệ, dùng định dạng HH:mm."
         else -> null
     }
     var endError = when {
-        endTime.isBlank() -> "Select an end time."
-        !isValidScheduleTime(endTime) -> "Use a valid end time in HH:mm format."
+        endTime.isBlank() -> "Hãy chọn giờ kết thúc."
+        !isValidScheduleTime(endTime) -> "Giờ kết thúc không hợp lệ, dùng định dạng HH:mm."
         else -> null
     }
 
     if (startError == null && endError == null && startTime >= endTime) {
-        endError = "End time must be after start time."
+        endError = "Giờ kết thúc phải sau giờ bắt đầu."
     }
 
     val errors = ScheduleFormFieldErrors(
-        subject = if (subjectId == null || subjectId <= 0) "Select a subject." else null,
+        subject = if (subjectId == null || subjectId <= 0) "Hãy chọn môn học." else null,
         studyDate = dateError,
         startTime = startError,
         endTime = endError,
-        location = if (normalizedLocation.isEmpty()) "Enter a location." else null,
+        location = if (normalizedLocation.isEmpty()) "Hãy nhập địa điểm." else null,
     )
 
     if (errors.hasErrors) return ScheduleValidationResult(errors = errors)

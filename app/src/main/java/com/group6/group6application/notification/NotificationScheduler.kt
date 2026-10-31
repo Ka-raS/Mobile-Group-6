@@ -28,9 +28,8 @@ object NotificationScheduler {
     internal fun changeWorkName(id: Int) = "study-change-$id"
     internal fun scheduleTag(id: Int) = "study-schedule-$id"
 
-    /** Call after inserting into Room, using the generated schedule ID. */
     fun schedule(context: Context, schedule: StudySchedule): Operation {
-        require(schedule.id > 0 && schedule.studentId > 0) { "Save the schedule in Room before scheduling a reminder." }
+        require(schedule.id > 0 && schedule.studentId > 0) { "Phải lưu lịch học vào Room trước khi hẹn nhắc." }
         val delay = reminderDelayMillis(schedule) ?: return cancel(context, schedule.id)
         val startMillis = studyStart(schedule, ZoneId.systemDefault())!!.toEpochMilli()
         if (StudyNotifications.wasReminded(context, schedule.id, startMillis)) {
@@ -46,21 +45,18 @@ object NotificationScheduler {
             .enqueueUniqueWork(reminderWorkName(schedule.id), ExistingWorkPolicy.REPLACE, request)
     }
 
-    /** Cancels queued jobs and removes visible notifications for this schedule. */
     fun cancel(context: Context, scheduleId: Int): Operation {
         require(scheduleId > 0)
         StudyNotifications.dismiss(context, scheduleId)
         return WorkManager.getInstance(context.applicationContext).cancelAllWorkByTag(scheduleTag(scheduleId))
     }
 
-    /** Call after editing a schedule or updating its status in Room. */
     fun notifyChanged(context: Context, schedule: StudySchedule): Operation {
         StudyNotifications.dismissReminder(context, schedule.id)
         schedule(context, schedule)
         return enqueueChange(context, schedule, baseInput(schedule, CHANGED).build())
     }
 
-    /** Call after deleting, retaining the old row to describe the removed session. */
     fun notifyDeleted(context: Context, deletedSchedule: StudySchedule): Operation {
         cancel(context, deletedSchedule.id)
         val input = baseInput(deletedSchedule, DELETED)
@@ -77,7 +73,6 @@ object NotificationScheduler {
         return WorkManager.getInstance(context.applicationContext).cancelAllWorkByTag(WORK_TAG)
     }
 
-    /** Restore future reminders after login/resume or after permission is granted. */
     suspend fun restore(context: Context, studentId: Int) {
         val session = SessionManager(context)
         if (!session.isLoggedIn || session.role != Role.STUDENT || session.studentId != studentId) return

@@ -46,6 +46,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.group6.group6application.entities.ScheduleStatus
 import com.group6.group6application.entities.Subject
 import java.time.Instant
 import java.time.LocalDate
@@ -105,16 +106,16 @@ fun ScheduleFormActivity(
         modifier = Modifier.fillMaxSize().testTag(SCREEN_TAG),
         topBar = {
             TopAppBar(
-                title = { Text(if (isEditing) "Edit schedule" else "Book a session") },
+                title = { Text(if (isEditing) "Sửa lịch học" else "Đặt lịch học") },
                 navigationIcon = {
                     TextButton(
                         onClick = onBack,
                         modifier =
                             Modifier.testTag(BACK_TAG).semantics {
-                                contentDescription = "Navigate back"
+                                contentDescription = "Quay lại"
                             },
                     ) {
-                        Text("Back")
+                        Text("Quay lại")
                     }
                 },
             )
@@ -130,7 +131,7 @@ fun ScheduleFormActivity(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     CircularProgressIndicator()
-                    Text("Loading schedule…")
+                    Text("Đang tải lịch học…")
                 }
             }
         } else {
@@ -145,7 +146,7 @@ fun ScheduleFormActivity(
             ) {
                 if (!sessionValid) {
                     MessageBanner(
-                        message = "Your student session is unavailable. Please sign in again.",
+                        message = "Không tìm thấy phiên đăng nhập sinh viên. Vui lòng đăng nhập lại.",
                         dismissible = false,
                         onDismiss = onDismissError,
                     )
@@ -177,13 +178,13 @@ fun ScheduleFormActivity(
                                     enabled = interactionEnabled && subjects.isNotEmpty(),
                                 )
                                 .testTag(SUBJECT_TAG)
-                                .semantics { contentDescription = "Select subject" },
+                                .semantics { contentDescription = "Chọn môn học" },
                         enabled = interactionEnabled && subjects.isNotEmpty(),
                         readOnly = true,
                         singleLine = true,
                         isError = fieldErrors.subject != null,
-                        label = { Text("Subject") },
-                        placeholder = { Text("Choose a subject") },
+                        label = { Text("Môn học") },
+                        placeholder = { Text("Chọn một môn học") },
                         supportingText =
                             fieldErrors.subject?.let { message ->
                                 {
@@ -221,7 +222,7 @@ fun ScheduleFormActivity(
 
                 if (subjects.isEmpty()) {
                     Text(
-                        text = "No subjects are available.",
+                        text = "Chưa có môn học nào.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -229,11 +230,11 @@ fun ScheduleFormActivity(
 
                 PickerField(
                     value = studyDate,
-                    label = "Study date",
+                    label = "Ngày học",
                     placeholder = "YYYY-MM-DD",
-                    trailingText = "Date",
+                    trailingText = "Ngày",
                     testTag = DATE_TAG,
-                    contentDescription = "Select study date",
+                    contentDescription = "Chọn ngày học",
                     enabled = interactionEnabled,
                     errorMessage = fieldErrors.studyDate,
                     onClick = { showDatePicker = true },
@@ -245,11 +246,11 @@ fun ScheduleFormActivity(
                 ) {
                     PickerField(
                         value = startTime,
-                        label = "Start time",
+                        label = "Giờ bắt đầu",
                         placeholder = "HH:mm",
-                        trailingText = "Time",
+                        trailingText = "Giờ",
                         testTag = START_TIME_TAG,
-                        contentDescription = "Select start time",
+                        contentDescription = "Chọn giờ bắt đầu",
                         enabled = interactionEnabled,
                         errorMessage = fieldErrors.startTime,
                         onClick = { showStartTimePicker = true },
@@ -257,11 +258,11 @@ fun ScheduleFormActivity(
                     )
                     PickerField(
                         value = endTime,
-                        label = "End time",
+                        label = "Giờ kết thúc",
                         placeholder = "HH:mm",
-                        trailingText = "Time",
+                        trailingText = "Giờ",
                         testTag = END_TIME_TAG,
-                        contentDescription = "Select end time",
+                        contentDescription = "Chọn giờ kết thúc",
                         enabled = interactionEnabled,
                         errorMessage = fieldErrors.endTime,
                         onClick = { showEndTimePicker = true },
@@ -275,12 +276,12 @@ fun ScheduleFormActivity(
                     modifier =
                         Modifier.fillMaxWidth()
                             .testTag(LOCATION_TAG)
-                            .semantics { contentDescription = "Schedule location" },
+                            .semantics { contentDescription = "Địa điểm học" },
                     enabled = interactionEnabled,
                     singleLine = true,
                     isError = fieldErrors.location != null,
-                    label = { Text("Location") },
-                    placeholder = { Text("Enter a location") },
+                    label = { Text("Địa điểm") },
+                    placeholder = { Text("Nhập địa điểm") },
                     supportingText =
                         fieldErrors.location?.let { message ->
                             {
@@ -300,13 +301,13 @@ fun ScheduleFormActivity(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Current status",
+                                text = "Trạng thái hiện tại",
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                text = status,
+                                text = ScheduleStatus.label(status),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                             )
@@ -326,9 +327,9 @@ fun ScheduleFormActivity(
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
                         Spacer(Modifier.size(10.dp))
-                        Text("Saving…")
+                        Text("Đang lưu…")
                     } else {
-                        Text(if (isEditing) "Save changes" else "Save schedule")
+                        Text(if (isEditing) "Lưu thay đổi" else "Lưu lịch học")
                     }
                 }
 
@@ -362,7 +363,7 @@ fun ScheduleFormActivity(
                     onClick = { showDatePicker = false },
                     modifier = Modifier.testTag("schedule_form_date_cancel"),
                 ) {
-                    Text("Cancel")
+                    Text("Hủy")
                 }
             },
         ) {
@@ -375,7 +376,7 @@ fun ScheduleFormActivity(
 
     if (showStartTimePicker) {
         ScheduleTimePickerDialog(
-            title = "Select start time",
+            title = "Chọn giờ bắt đầu",
             initialTime = startTime,
             testTagPrefix = "schedule_form_start_time_picker",
             onConfirm = {
@@ -388,7 +389,7 @@ fun ScheduleFormActivity(
 
     if (showEndTimePicker) {
         ScheduleTimePickerDialog(
-            title = "Select end time",
+            title = "Chọn giờ kết thúc",
             initialTime = endTime,
             testTagPrefix = "schedule_form_end_time_picker",
             onConfirm = {
@@ -468,7 +469,7 @@ private fun MessageBanner(message: String, dismissible: Boolean, onDismiss: () -
                     onClick = onDismiss,
                     modifier = Modifier.testTag("schedule_form_error_dismiss"),
                 ) {
-                    Text("Dismiss")
+                    Text("Đóng")
                 }
             }
         }
@@ -510,7 +511,7 @@ private fun ScheduleTimePickerDialog(
                 onClick = onDismiss,
                 modifier = Modifier.testTag("${testTagPrefix}_cancel"),
             ) {
-                Text("Cancel")
+                Text("Hủy")
             }
         },
     ) {

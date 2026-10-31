@@ -40,7 +40,7 @@ class StudentScheduleActivitiesTest {
             }
         }
 
-        composeRule.onNodeWithText("Welcome, student1!").assertIsDisplayed()
+        composeRule.onNodeWithText("Xin chào, student1!").assertIsDisplayed()
         composeRule.onNodeWithTag("student_home_schedules_button").performClick()
         composeRule.onNodeWithTag("student_home_book_button").performClick()
 
@@ -74,7 +74,7 @@ class StudentScheduleActivitiesTest {
             }
         }
 
-        composeRule.onNodeWithText("No schedules yet").assertIsDisplayed()
+        composeRule.onNodeWithText("Chưa có lịch học").assertIsDisplayed()
         composeRule.onNodeWithTag("schedule_search_field").performTextInput("mobile")
         composeRule.onNodeWithTag("schedule_filter_confirmed").performClick()
 
@@ -90,7 +90,7 @@ class StudentScheduleActivitiesTest {
             Group6ApplicationTheme {
                 ScheduleListActivity(
                     schedules = listOf(
-                        ScheduleWithSubject(schedule, "MOB101", "Mobile Programming")
+                        ScheduleWithSubject(schedule, "MOB101", "Lập trình di động")
                     ),
                     query = "",
                     selectedStatus = null,
@@ -111,7 +111,7 @@ class StudentScheduleActivitiesTest {
 
         composeRule.onNodeWithTag("schedule_delete_${schedule.id}").performClick()
         composeRule.onNodeWithTag("schedule_delete_confirmation_dialog").assertIsDisplayed()
-        composeRule.onNodeWithText("This schedule will be permanently deleted.").assertIsDisplayed()
+        composeRule.onNodeWithText("Lịch học này sẽ bị xóa vĩnh viễn.").assertIsDisplayed()
     }
 
     @Test
@@ -122,7 +122,7 @@ class StudentScheduleActivitiesTest {
             Group6ApplicationTheme {
                 ScheduleFormActivity(
                     isEditing = false,
-                    subjects = listOf(Subject(1, "MOB101", "Mobile Programming", "", 3)),
+                    subjects = listOf(Subject(1, "MOB101", "Lập trình di động", "", 3)),
                     selectedSubjectId = null,
                     studyDate = "",
                     startTime = "",
@@ -133,11 +133,11 @@ class StudentScheduleActivitiesTest {
                     isSaving = false,
                     errorMessage = null,
                     fieldErrors = ScheduleFormFieldErrors(
-                        subject = "Select a subject.",
-                        studyDate = "Select a date.",
-                        startTime = "Select a start time.",
-                        endTime = "Select an end time.",
-                        location = "Enter a location.",
+                        subject = "Hãy chọn môn học.",
+                        studyDate = "Hãy chọn ngày học.",
+                        startTime = "Hãy chọn giờ bắt đầu.",
+                        endTime = "Hãy chọn giờ kết thúc.",
+                        location = "Hãy nhập địa điểm.",
                     ),
                     sessionValid = true,
                     onSubjectChange = {},
@@ -152,9 +152,9 @@ class StudentScheduleActivitiesTest {
             }
         }
 
-        composeRule.onNodeWithTag("schedule_form_subject_error").assertIsDisplayed()
-        composeRule.onNodeWithTag("schedule_form_date_error").assertIsDisplayed()
-        composeRule.onNodeWithTag("schedule_form_location_error").assertIsDisplayed()
+        composeRule.onNodeWithTag("schedule_form_subject_error", useUnmergedTree = true).assertIsDisplayed()
+        composeRule.onNodeWithTag("schedule_form_date_error", useUnmergedTree = true).assertIsDisplayed()
+        composeRule.onNodeWithTag("schedule_form_location_error", useUnmergedTree = true).assertIsDisplayed()
         composeRule.onNodeWithTag("schedule_form_save").performClick()
 
         assertTrue(saveClicked)

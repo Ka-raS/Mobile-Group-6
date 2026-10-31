@@ -31,7 +31,7 @@ class StudyNotificationWorker(context: Context, params: WorkerParameters) : Coro
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.e("StudyNotification", "Unable to load schedule $id", e)
+            Log.e("StudyNotification", "Không thể tải lịch học $id", e)
             if (runAttemptCount < 3) Result.retry() else Result.failure()
         }
     }
@@ -41,7 +41,6 @@ internal fun isCurrentStudent(context: Context, studentId: Int): Boolean = Sessi
     it.isLoggedIn && it.role == Role.STUDENT && it.studentId == studentId && studentId > 0
 }
 
-/** Read the latest Room row rather than trusting stale work input after an edit. */
 internal suspend fun loadStudyNotification(
     db: AppDB,
     input: Data,
@@ -71,7 +70,6 @@ internal suspend fun loadStudyNotification(
             if (reminderDelayMillis(schedule, now, zone) == null ||
                 start.toEpochMilli() != input.getLong(NotificationScheduler.KEY_START, -1)
             ) return null
-            // A changed time zone or an early execution must not trigger an early reminder.
             if (start.minusSeconds(REMINDER_MINUTES * 60).isAfter(now)) return null
             "Sắp đến giờ học: ${subject.subjectName}"
         }
@@ -85,6 +83,6 @@ internal suspend fun loadStudyNotification(
     return StudyNotification(
         title,
         "${subject.subjectName} (${subject.subjectCode}) · ${schedule.studyDate} · " +
-            "${schedule.startTime}–${schedule.endTime} · ${schedule.location} · ${schedule.status}",
+            "${schedule.startTime}–${schedule.endTime} · ${schedule.location} · ${ScheduleStatus.label(schedule.status)}",
     )
 }

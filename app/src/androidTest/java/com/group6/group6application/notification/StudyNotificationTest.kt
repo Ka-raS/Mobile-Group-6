@@ -108,7 +108,6 @@ class StudyNotificationTest {
         assertEquals(1, active.size)
         assertNotEquals(first.id, active.single().id)
         val oldWork = manager.getWorkInfoById(first.id).get(10, TimeUnit.SECONDS)
-        // REPLACE may remove the old database row entirely, or retain it as cancelled.
         assertTrue(oldWork == null || oldWork.state == WorkInfo.State.CANCELLED)
         NotificationScheduler.cancel(context, workTestId).result.get(10, TimeUnit.SECONDS)
         assertTrue(manager.getWorkInfosForUniqueWork(NotificationScheduler.reminderWorkName(workTestId))

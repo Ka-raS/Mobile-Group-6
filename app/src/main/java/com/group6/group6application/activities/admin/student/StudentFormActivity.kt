@@ -22,19 +22,19 @@ fun StudentFormActivity(id: Int, onBack: () -> Unit, model: AdminViewModel = vie
 private fun StudentFormContent(
     id: Int, input: StudentInput, onInput: (StudentInput) -> Unit, busy: Boolean, loaded: Boolean,
     error: String?, onBack: () -> Unit, onSave: () -> Unit,
-) = AdminFormContent(if (id == 0) "Add Student" else "Edit Student", busy, loaded, error, onBack, onSave) {
-    Text("Student Information", style = MaterialTheme.typography.titleMedium)
-    AdminField("Student Code *", input.studentCode, { onInput(input.copy(studentCode = it)) }, !busy)
-    AdminField("Full Name *", input.fullname, { onInput(input.copy(fullname = it)) }, !busy)
+) = AdminFormContent(if (id == 0) "Thêm sinh viên" else "Sửa sinh viên", busy, loaded, error, onBack, onSave) {
+    Text("Thông tin sinh viên", style = MaterialTheme.typography.titleMedium)
+    AdminField("Mã sinh viên *", input.studentCode, { onInput(input.copy(studentCode = it)) }, !busy)
+    AdminField("Họ tên *", input.fullname, { onInput(input.copy(fullname = it)) }, !busy)
     AdminField("Email *", input.email, { onInput(input.copy(email = it)) }, !busy, KeyboardType.Email)
-    AdminField("Phone Number *", input.phone, { onInput(input.copy(phone = it)) }, !busy, KeyboardType.Phone)
-    Text("Login Account • Student", style = MaterialTheme.typography.titleMedium)
-    AdminField("Username *", input.username, { onInput(input.copy(username = it)) }, !busy)
+    AdminField("Số điện thoại *", input.phone, { onInput(input.copy(phone = it)) }, !busy, KeyboardType.Phone)
+    Text("Tài khoản đăng nhập • Student", style = MaterialTheme.typography.titleMedium)
+    AdminField("Tên đăng nhập *", input.username, { onInput(input.copy(username = it)) }, !busy)
     AdminField(
-        if (id == 0) "Password *" else "New Password", input.password,
+        if (id == 0) "Mật khẩu *" else "Mật khẩu mới", input.password,
         { onInput(input.copy(password = it)) }, !busy, KeyboardType.Password, password = true,
     )
-    Text(if (id == 0) "Password must be at least 6 characters. A Student account will be created with this profile." else "Leave password blank to keep the current password; a new password must be at least 6 characters.")
+    Text(if (id == 0) "Mật khẩu có ít nhất 6 ký tự. Tài khoản Student sẽ được tạo cùng hồ sơ này." else "Để trống mật khẩu để giữ mật khẩu cũ; mật khẩu mới phải có ít nhất 6 ký tự.")
 }
 
 @Preview(showBackground = true)

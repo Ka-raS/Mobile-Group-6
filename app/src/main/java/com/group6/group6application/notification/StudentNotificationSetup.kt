@@ -22,7 +22,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.CancellationException
 
-/** Mounted only on student routes. Request once; restore again after login/resume. */
 @Composable
 fun StudentNotificationSetup(studentId: Int) {
     val context = LocalContext.current
@@ -53,7 +52,7 @@ fun StudentNotificationSetup(studentId: Int) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.e("StudyNotification", "Unable to restore reminders", e)
+                Log.e("StudyNotification", "Không thể khôi phục nhắc lịch", e)
             }
         }
     }

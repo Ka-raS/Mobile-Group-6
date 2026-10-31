@@ -26,15 +26,14 @@ data class SubjectInput(
     val credits: String = "",
 )
 
-/** Admin operations use the shared DAOs without changing the core database contract. */
 class AdminRepository(private val db: AppDB) {
     val students = db.studentDao().getAll()
     val subjects = db.subjectDao().getAll()
 
     suspend fun loadStudent(id: Int): StudentInput = db.withTransaction {
-        val student = requireNotNull(db.studentDao().getById(id)) { "Student no longer exists." }
-        val account = requireNotNull(db.accountDao().getById(student.accountId)) { "Account not found." }
-        require(account.role == Role.STUDENT) { "This account does not have the Student role." }
+        val student = requireNotNull(db.studentDao().getById(id)) { "Sinh viên không còn tồn tại." }
+        val account = requireNotNull(db.accountDao().getById(student.accountId)) { "Không tìm thấy tài khoản." }
+        require(account.role == Role.STUDENT) { "Tài khoản này không có quyền Student." }
         StudentInput(student.studentCode, student.fullname, student.email, student.phone, account.username)
     }
 
@@ -44,32 +43,31 @@ class AdminRepository(private val db: AppDB) {
         val email = input.email.trim()
         val phone = input.phone.trim()
         val username = input.username.trim()
-        require(code.isNotEmpty()) { "Please enter a student code." }
-        require(name.isNotEmpty()) { "Please enter a full name." }
-        require(Patterns.EMAIL_ADDRESS.matcher(email).matches()) { "Invalid email address." }
-        require(phone.matches(Regex("\\+?[0-9]{9,15}"))) { "Phone number must be 9–15 digits and may start with +." }
+        require(code.isNotEmpty()) { "Vui lòng nhập mã sinh viên." }
+        require(name.isNotEmpty()) { "Vui lòng nhập họ tên." }
+        require(Patterns.EMAIL_ADDRESS.matcher(email).matches()) { "Email không hợp lệ." }
+        require(phone.matches(Regex("\\+?[0-9]{9,15}"))) { "Số điện thoại phải có 9–15 chữ số, có thể bắt đầu bằng +." }
         require(username.isNotEmpty() && username.none { it.isWhitespace() }) {
-            "Username cannot be empty or contain spaces."
+            "Tên đăng nhập không được để trống hoặc chứa khoảng trắng."
         }
         require((id != 0 && input.password.isEmpty()) || (input.password.isNotBlank() && input.password.length >= 6)) {
-            "Password must be at least 6 characters and not only whitespace."
+            "Mật khẩu phải có ít nhất 6 ký tự và không chỉ gồm khoảng trắng."
         }
         db.withTransaction {
             val existing = if (id == 0) null else requireNotNull(db.studentDao().getById(id)) {
-                "Student no longer exists."
+                "Sinh viên không còn tồn tại."
             }
             require(students.first().none { it.id != id && it.studentCode.equals(code, ignoreCase = true) }) {
-                "Student code already exists."
+                "Mã sinh viên đã tồn tại."
             }
             val usernameOwner = db.accountDao().getByUsername(username)
-            require(usernameOwner == null || usernameOwner.id == existing?.accountId) { "Username already exists." }
+            require(usernameOwner == null || usernameOwner.id == existing?.accountId) { "Tên đăng nhập đã tồn tại." }
             if (existing == null) {
-                // A failed Student insert rolls back the Account insert as well.
                 val accountId = db.accountDao().insert(Account(username = username, password = input.password, role = Role.STUDENT)).toInt()
                 db.studentDao().insert(Student(studentCode = code, fullname = name, email = email, phone = phone, accountId = accountId))
             } else {
-                val account = requireNotNull(db.accountDao().getById(existing.accountId)) { "Account not found." }
-                require(account.role == Role.STUDENT) { "Cannot edit an Admin account through a student profile." }
+                val account = requireNotNull(db.accountDao().getById(existing.accountId)) { "Không tìm thấy tài khoản." }
+                require(account.role == Role.STUDENT) { "Không thể sửa tài khoản Admin qua hồ sơ sinh viên." }
                 db.accountDao().update(account.copy(username = username, password = input.password.ifEmpty { account.password }))
                 db.studentDao().update(existing.copy(studentCode = code, fullname = name, email = email, phone = phone))
             }
@@ -77,18 +75,17 @@ class AdminRepository(private val db: AppDB) {
     }
 
     suspend fun deleteStudent(id: Int) = db.withTransaction {
-        val student = requireNotNull(db.studentDao().getById(id)) { "Student no longer exists." }
-        val account = requireNotNull(db.accountDao().getById(student.accountId)) { "Account not found." }
-        require(account.role == Role.STUDENT) { "Cannot delete an Admin account through a student profile." }
+        val student = requireNotNull(db.studentDao().getById(id)) { "Sinh viên không còn tồn tại." }
+        val account = requireNotNull(db.accountDao().getById(student.accountId)) { "Không tìm thấy tài khoản." }
+        require(account.role == Role.STUDENT) { "Không thể xóa tài khoản Admin qua hồ sơ sinh viên." }
         require(students.first().none { it.id != id && it.accountId == account.id }) {
-            "This account is linked to another student profile. Please check the data."
+            "Tài khoản này đang gắn với một hồ sơ sinh viên khác. Vui lòng kiểm tra dữ liệu."
         }
-        // Existing foreign keys cascade to the Student and their StudySchedule rows.
         db.accountDao().delete(account)
     }
 
     suspend fun loadSubject(id: Int): SubjectInput {
-        val subject = requireNotNull(db.subjectDao().getById(id)) { "Subject no longer exists." }
+        val subject = requireNotNull(db.subjectDao().getById(id)) { "Môn học không còn tồn tại." }
         return SubjectInput(subject.subjectCode, subject.subjectName, subject.description, subject.credits.toString())
     }
 
@@ -96,23 +93,23 @@ class AdminRepository(private val db: AppDB) {
         val code = input.subjectCode.trim().uppercase(Locale.ROOT)
         val name = input.subjectName.trim()
         val credits = input.credits.trim().toIntOrNull()
-        require(code.isNotEmpty()) { "Please enter a subject code." }
-        require(name.isNotEmpty()) { "Please enter a subject name." }
-        require(credits != null && credits > 0) { "Credits must be a positive integer." }
+        require(code.isNotEmpty()) { "Vui lòng nhập mã môn học." }
+        require(name.isNotEmpty()) { "Vui lòng nhập tên môn học." }
+        require(credits != null && credits > 0) { "Số tín chỉ phải là số nguyên dương." }
         db.withTransaction {
             require(subjects.first().none { it.id != id && it.subjectCode.equals(code, ignoreCase = true) }) {
-                "Subject code already exists."
+                "Mã môn học đã tồn tại."
             }
             val subject = Subject(id, code, name, input.description.trim(), credits)
             if (id == 0) db.subjectDao().insert(subject) else {
-                requireNotNull(db.subjectDao().getById(id)) { "Subject no longer exists." }
+                requireNotNull(db.subjectDao().getById(id)) { "Môn học không còn tồn tại." }
                 db.subjectDao().update(subject)
             }
         }
     }
 
     suspend fun deleteSubject(id: Int) = db.withTransaction {
-        val subject = requireNotNull(db.subjectDao().getById(id)) { "Subject no longer exists." }
+        val subject = requireNotNull(db.subjectDao().getById(id)) { "Môn học không còn tồn tại." }
         db.subjectDao().delete(subject)
     }
 }

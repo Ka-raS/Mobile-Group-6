@@ -16,21 +16,21 @@ fun AdminHomeActivity(onStudents: () -> Unit, onSubjects: () -> Unit, onLogout: 
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        Text("Admin Home", style = MaterialTheme.typography.headlineMedium)
-        Text("Manage students and subjects for the study schedule app.", style = MaterialTheme.typography.bodyLarge)
+        Text("Trang quản trị", style = MaterialTheme.typography.headlineMedium)
+        Text("Quản lý sinh viên và môn học của ứng dụng lịch học.", style = MaterialTheme.typography.bodyLarge)
         Card(onClick = onStudents, modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Student Management", style = MaterialTheme.typography.titleLarge)
-                Text("View, search, and update student profiles and create Student accounts.")
+                Text("Quản lý sinh viên", style = MaterialTheme.typography.titleLarge)
+                Text("Xem, tìm kiếm, cập nhật hồ sơ sinh viên và tạo tài khoản Student.")
             }
         }
         Card(onClick = onSubjects, modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Subject Management", style = MaterialTheme.typography.titleLarge)
-                Text("Manage subject codes, names, descriptions, and credits.")
+                Text("Quản lý môn học", style = MaterialTheme.typography.titleLarge)
+                Text("Quản lý mã môn, tên môn, mô tả và số tín chỉ.")
             }
         }
-        OutlinedButton(onClick = onLogout, modifier = Modifier.fillMaxWidth()) { Text("Logout") }
+        OutlinedButton(onClick = onLogout, modifier = Modifier.fillMaxWidth()) { Text("Đăng xuất") }
     }
 }
 

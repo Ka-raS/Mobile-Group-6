@@ -44,10 +44,6 @@ import com.group6.group6application.entities.ScheduleStatus
 import com.group6.group6application.entities.ScheduleWithSubject
 import com.group6.group6application.entities.StudySchedule
 
-/**
- * Stateless schedule list UI. Filtering, searching, persistence, and authorization are owned by
- * the caller; this composable only renders the supplied state and emits user actions.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleListActivity(
@@ -72,15 +68,15 @@ fun ScheduleListActivity(
         modifier = Modifier.testTag("schedule_list_screen"),
         topBar = {
             TopAppBar(
-                title = { Text("My Schedules") },
+                title = { Text("Lịch học của tôi") },
                 navigationIcon = {
                     TextButton(
                         onClick = onBack,
                         modifier = Modifier
                             .testTag("schedule_list_back_button")
-                            .semantics { contentDescription = "Go back" },
+                            .semantics { contentDescription = "Quay lại" },
                     ) {
-                        Text("Back")
+                        Text("Quay lại")
                     }
                 },
                 actions = {
@@ -89,9 +85,9 @@ fun ScheduleListActivity(
                         enabled = sessionValid && !isBusy,
                         modifier = Modifier
                             .testTag("schedule_list_add_button")
-                            .semantics { contentDescription = "Add schedule" },
+                            .semantics { contentDescription = "Thêm lịch học" },
                     ) {
-                        Text("Add")
+                        Text("Thêm")
                     }
                 },
             )
@@ -136,8 +132,8 @@ fun ScheduleListActivity(
         AlertDialog(
             onDismissRequest = { schedulePendingDeletion = null },
             modifier = Modifier.testTag("schedule_delete_confirmation_dialog"),
-            title = { Text("Delete schedule?") },
-            text = { Text("This schedule will be permanently deleted.") },
+            title = { Text("Xóa lịch học?") },
+            text = { Text("Lịch học này sẽ bị xóa vĩnh viễn.") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -147,9 +143,9 @@ fun ScheduleListActivity(
                     enabled = !isBusy,
                     modifier = Modifier
                         .testTag("schedule_delete_confirm_button")
-                        .semantics { contentDescription = "Confirm schedule deletion" },
+                        .semantics { contentDescription = "Xác nhận xóa lịch học" },
                 ) {
-                    Text("Delete")
+                    Text("Xóa")
                 }
             },
             dismissButton = {
@@ -157,9 +153,9 @@ fun ScheduleListActivity(
                     onClick = { schedulePendingDeletion = null },
                     modifier = Modifier
                         .testTag("schedule_delete_cancel_button")
-                        .semantics { contentDescription = "Cancel schedule deletion" },
+                        .semantics { contentDescription = "Hủy xóa lịch học" },
                 ) {
-                    Text("Cancel")
+                    Text("Hủy")
                 }
             },
         )
@@ -169,14 +165,14 @@ fun ScheduleListActivity(
         AlertDialog(
             onDismissRequest = onDismissError,
             modifier = Modifier.testTag("schedule_error_dialog"),
-            title = { Text("Schedule error") },
+            title = { Text("Lỗi lịch học") },
             text = { Text(message) },
             confirmButton = {
                 TextButton(
                     onClick = onDismissError,
                     modifier = Modifier
                         .testTag("schedule_error_dismiss_button")
-                        .semantics { contentDescription = "Dismiss schedule error" },
+                        .semantics { contentDescription = "Đóng thông báo lỗi" },
                 ) {
                     Text("OK")
                 }
@@ -206,13 +202,13 @@ private fun ScheduleListContent(
             value = query,
             onValueChange = onQueryChange,
             enabled = !isBusy,
-            label = { Text("Search schedules") },
-            placeholder = { Text("Subject or location") },
+            label = { Text("Tìm lịch học") },
+            placeholder = { Text("Môn học hoặc địa điểm") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("schedule_search_field")
-                .semantics { contentDescription = "Search schedules by subject or location" },
+                .semantics { contentDescription = "Tìm lịch học theo môn học hoặc địa điểm" },
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -225,7 +221,7 @@ private fun ScheduleListContent(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             StatusFilterChip(
-                label = "All",
+                label = "Tất cả",
                 status = null,
                 selectedStatus = selectedStatus,
                 enabled = !isBusy,
@@ -233,7 +229,7 @@ private fun ScheduleListContent(
             )
             ScheduleStatus.ALL.forEach { status ->
                 StatusFilterChip(
-                    label = status,
+                    label = ScheduleStatus.label(status),
                     status = status,
                     selectedStatus = selectedStatus,
                     enabled = !isBusy,
@@ -289,7 +285,7 @@ private fun StatusFilterChip(
         label = { Text(label) },
         modifier = Modifier
             .testTag("schedule_filter_$tagSuffix")
-            .semantics { contentDescription = "Filter schedules by $label" },
+            .semantics { contentDescription = "Lọc lịch học: $label" },
     )
 }
 
@@ -311,8 +307,8 @@ private fun ScheduleCard(
             .semantics {
                 contentDescription =
                     "${item.subjectCode}, ${item.subjectName}, ${schedule.studyDate}, " +
-                        "${schedule.startTime} to ${schedule.endTime}, ${schedule.location}, " +
-                        schedule.status
+                        "${schedule.startTime} đến ${schedule.endTime}, ${schedule.location}, " +
+                        ScheduleStatus.label(schedule.status)
             },
     ) {
         Column(
@@ -326,12 +322,12 @@ private fun ScheduleCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
-            ScheduleDetail(label = "Date", value = schedule.studyDate)
+            ScheduleDetail(label = "Ngày", value = schedule.studyDate)
             ScheduleDetail(
-                label = "Time",
+                label = "Giờ",
                 value = "${schedule.startTime}–${schedule.endTime}",
             )
-            ScheduleDetail(label = "Location", value = schedule.location)
+            ScheduleDetail(label = "Địa điểm", value = schedule.location)
             StatusBadge(status = schedule.status)
 
             Row(
@@ -344,18 +340,18 @@ private fun ScheduleCard(
                     enabled = !isBusy,
                     modifier = Modifier
                         .testTag("schedule_edit_${schedule.id}")
-                        .semantics { contentDescription = "Edit ${item.subjectCode} schedule" },
+                        .semantics { contentDescription = "Sửa lịch học ${item.subjectCode}" },
                 ) {
-                    Text("Edit")
+                    Text("Sửa")
                 }
                 TextButton(
                     onClick = onDeleteRequest,
                     enabled = !isBusy,
                     modifier = Modifier
                         .testTag("schedule_delete_${schedule.id}")
-                        .semantics { contentDescription = "Delete ${item.subjectCode} schedule" },
+                        .semantics { contentDescription = "Xóa lịch học ${item.subjectCode}" },
                 ) {
-                    Text("Delete")
+                    Text("Xóa")
                 }
                 Box {
                     TextButton(
@@ -364,10 +360,10 @@ private fun ScheduleCard(
                         modifier = Modifier
                             .testTag("schedule_status_menu_${schedule.id}")
                             .semantics {
-                                contentDescription = "Change ${item.subjectCode} schedule status"
+                                contentDescription = "Đổi trạng thái lịch học ${item.subjectCode}"
                             },
                     ) {
-                        Text("Status")
+                        Text("Trạng thái")
                     }
                     DropdownMenu(
                         expanded = statusMenuExpanded,
@@ -376,7 +372,7 @@ private fun ScheduleCard(
                     ) {
                         ScheduleStatus.ALL.forEach { status ->
                             DropdownMenuItem(
-                                text = { Text(status) },
+                                text = { Text(ScheduleStatus.label(status)) },
                                 enabled = status != schedule.status && !isBusy,
                                 onClick = {
                                     statusMenuExpanded = false
@@ -388,7 +384,7 @@ private fun ScheduleCard(
                                     )
                                     .semantics {
                                         contentDescription =
-                                            "Set ${item.subjectCode} schedule to $status"
+                                            "Đặt lịch học ${item.subjectCode} thành ${ScheduleStatus.label(status)}"
                                     },
                             )
                         }
@@ -436,7 +432,7 @@ private fun StatusBadge(status: String) {
         modifier = Modifier.testTag("schedule_status_badge_${status.lowercase()}"),
     ) {
         Text(
-            text = status,
+            text = ScheduleStatus.label(status),
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
         )
@@ -457,14 +453,14 @@ private fun EmptyScheduleMessage(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                text = if (hasActiveFilters) "No matching schedules" else "No schedules yet",
+                text = if (hasActiveFilters) "Không có lịch học phù hợp" else "Chưa có lịch học",
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
                 text = if (hasActiveFilters) {
-                    "Try changing your search or status filter."
+                    "Hãy thử đổi từ khóa hoặc bộ lọc trạng thái."
                 } else {
-                    "Add a schedule to get started."
+                    "Thêm lịch học để bắt đầu."
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -486,12 +482,12 @@ private fun InvalidSessionMessage(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = "Session unavailable",
+                    text = "Không có phiên đăng nhập",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.error,
                 )
                 Text(
-                    text = "Please log in as a student to manage schedules.",
+                    text = "Vui lòng đăng nhập bằng tài khoản sinh viên để quản lý lịch học.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

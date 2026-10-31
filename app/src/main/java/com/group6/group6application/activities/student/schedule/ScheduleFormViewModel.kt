@@ -79,7 +79,7 @@ class ScheduleFormViewModel(
         )
         if (!validation.isValid) {
             _uiState.value = state.copy(fieldErrors = validation.errors)
-            _events.tryEmit(ScheduleFormEvent.ShowMessage("Please correct the highlighted fields."))
+            _events.tryEmit(ScheduleFormEvent.ShowMessage("Vui lòng sửa các trường bị đánh dấu."))
             return
         }
 
@@ -88,7 +88,7 @@ class ScheduleFormViewModel(
             try {
                 saveValidated(requireNotNull(validation.fields))
             } catch (_: Exception) {
-                _events.emit(ScheduleFormEvent.ShowMessage("Unable to save the schedule."))
+                _events.emit(ScheduleFormEvent.ShowMessage("Không thể lưu lịch học."))
             } finally {
                 _uiState.value = _uiState.value.copy(isSaving = false)
             }
@@ -103,7 +103,7 @@ class ScheduleFormViewModel(
                 return@launch
             }
             if (requestedScheduleId < 0) {
-                blockForm("Schedule not found.")
+                blockForm("Không tìm thấy lịch học.")
                 return@launch
             }
 
@@ -121,11 +121,11 @@ class ScheduleFormViewModel(
 
                 val schedule = scheduleDao.getById(requestedScheduleId)
                 if (schedule == null) {
-                    blockForm("Schedule not found.", subjects = subjects)
+                    blockForm("Không tìm thấy lịch học.", subjects = subjects)
                     return@launch
                 }
                 if (schedule.studentId != studentId) {
-                    blockForm("You can only edit your own schedules.", subjects = subjects)
+                    blockForm("Bạn chỉ được sửa lịch học của mình.", subjects = subjects)
                     return@launch
                 }
 
@@ -142,7 +142,7 @@ class ScheduleFormViewModel(
                     sessionValid = true,
                 )
             } catch (_: Exception) {
-                blockForm("Unable to load the schedule form.")
+                blockForm("Không thể tải form lịch học.")
             }
         }
     }
@@ -155,9 +155,9 @@ class ScheduleFormViewModel(
         }
 
         if (subjectDao.getById(fields.subjectId) == null) {
-            val errors = _uiState.value.fieldErrors.copy(subject = "Select an available subject.")
+            val errors = _uiState.value.fieldErrors.copy(subject = "Hãy chọn một môn học còn tồn tại.")
             _uiState.value = _uiState.value.copy(fieldErrors = errors)
-            _events.emit(ScheduleFormEvent.ShowMessage("The selected subject is no longer available."))
+            _events.emit(ScheduleFormEvent.ShowMessage("Môn học đã chọn không còn tồn tại."))
             return
         }
 
@@ -166,11 +166,11 @@ class ScheduleFormViewModel(
         } else {
             scheduleDao.getById(requestedScheduleId).also { schedule ->
                 if (schedule == null) {
-                    blockForm("Schedule not found.")
+                    blockForm("Không tìm thấy lịch học.")
                     return
                 }
                 if (schedule.studentId != studentId) {
-                    blockForm("You can only edit your own schedules.")
+                    blockForm("Bạn chỉ được sửa lịch học của mình.")
                     return
                 }
             }
@@ -196,7 +196,7 @@ class ScheduleFormViewModel(
         val savedSchedule = if (existing == null) {
             val insertedId = scheduleDao.insert(schedule)
             if (insertedId <= 0 || insertedId > Int.MAX_VALUE) {
-                throw IllegalStateException("Room returned an invalid schedule id")
+                throw IllegalStateException("Room trả về id lịch học không hợp lệ")
             }
             schedule.copy(id = insertedId.toInt())
         } else {
@@ -204,8 +204,10 @@ class ScheduleFormViewModel(
             schedule
         }
 
-        if (savedSchedule.status != ScheduleStatus.CANCELLED) {
+        if (existing == null) {
             NotificationScheduler.schedule(getApplication(), savedSchedule)
+        } else {
+            NotificationScheduler.notifyChanged(getApplication(), savedSchedule)
         }
 
         _uiState.value = _uiState.value.copy(
@@ -244,7 +246,7 @@ class ScheduleFormViewModel(
     }
 
     private companion object {
-        const val NO_STUDENT_SESSION = "No active student session."
-        const val OVERLAP_MESSAGE = "This schedule overlaps another active schedule."
+        const val NO_STUDENT_SESSION = "Không có phiên đăng nhập sinh viên."
+        const val OVERLAP_MESSAGE = "Lịch học này bị trùng giờ với một lịch học khác."
     }
 }

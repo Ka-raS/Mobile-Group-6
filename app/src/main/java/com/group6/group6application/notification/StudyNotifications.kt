@@ -59,7 +59,6 @@ internal object StudyNotifications {
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .build()
         return try {
-            // The permission can be revoked between the check above and notify().
             NotificationManagerCompat.from(context).notify(if (reminder) REMINDER_TAG else CHANGE_TAG, id, notification)
             true
         } catch (_: SecurityException) {

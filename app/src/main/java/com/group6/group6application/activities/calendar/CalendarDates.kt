@@ -24,7 +24,6 @@ internal fun monthDays(date: LocalDate): List<LocalDate> {
 internal fun calendarRange(date: LocalDate, mode: CalendarMode): CalendarRange = when (mode) {
     CalendarMode.DAY -> CalendarRange(date, date)
     CalendarMode.WEEK -> weekStart(date).let { CalendarRange(it, it.plusDays(6)) }
-    // Include the adjacent-month cells so their booking counts are also correct.
     CalendarMode.MONTH -> monthDays(date).let { CalendarRange(it.first(), it.last()) }
 }
 

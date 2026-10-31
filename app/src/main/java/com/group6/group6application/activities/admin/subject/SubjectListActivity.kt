@@ -13,9 +13,9 @@ fun SubjectListActivity(onBack: () -> Unit, onAdd: () -> Unit, onEdit: (Int) -> 
     var query by rememberSaveable { mutableStateOf("") }
     val records = remember(subjects) {
         subjects?.map {
-            AdminRecord(it.id, it.subjectName, "${it.subjectCode} • ${it.credits} ${if (it.credits == 1) "credit" else "credits"}", listOf(
-                "Subject Code" to it.subjectCode, "Subject Name" to it.subjectName,
-                "Description" to it.description, "Credits" to it.credits.toString(),
+            AdminRecord(it.id, it.subjectName, "${it.subjectCode} • ${it.credits} tín chỉ", listOf(
+                "Mã môn học" to it.subjectCode, "Tên môn học" to it.subjectName,
+                "Mô tả" to it.description, "Số tín chỉ" to it.credits.toString(),
             ))
         }
     }
@@ -27,9 +27,9 @@ private fun SubjectListContent(
     records: List<AdminRecord>?, query: String, onQuery: (String) -> Unit, busy: Boolean, error: String?,
     onBack: () -> Unit, onAdd: () -> Unit, onEdit: (Int) -> Unit, onDelete: (Int) -> Unit,
 ) = AdminListContent(
-    title = "Subject Management", records = records, query = query, onQuery = onQuery,
-    searchHint = "Subject code, name, or description", busy = busy, error = error,
-    deleteWarning = "All study schedules associated with this subject will also be deleted. This action cannot be undone.",
+    title = "Quản lý môn học", records = records, query = query, onQuery = onQuery,
+    searchHint = "Mã môn, tên môn hoặc mô tả", busy = busy, error = error,
+    deleteWarning = "Toàn bộ lịch học của môn này cũng sẽ bị xóa. Không thể hoàn tác.",
     onBack = onBack, onAdd = onAdd, onEdit = onEdit, onDelete = onDelete,
 )
 
@@ -37,7 +37,7 @@ private fun SubjectListContent(
 @Composable
 private fun SubjectsPreview() {
     Group6ApplicationTheme(dynamicColor = false) {
-        SubjectListContent(listOf(AdminRecord(1, "Mobile Programming", "MOB101 • 3 credits", emptyList())), "", {}, false, null, {}, {}, {}, {})
+        SubjectListContent(listOf(AdminRecord(1, "Lập trình di động", "MOB101 • 3 tín chỉ", emptyList())), "", {}, false, null, {}, {}, {}, {})
     }
 }
 

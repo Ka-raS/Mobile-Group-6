@@ -74,7 +74,7 @@ private sealed interface CalendarUiState {
 }
 
 @Composable
-fun CalendarScreen(onBack: () -> Unit) {
+fun CalendarViewActivity(onBack: () -> Unit) {
     val context = LocalContext.current
     val session = remember(context) { SessionManager(context) }
     if (!session.isLoggedIn || session.role != Role.STUDENT || session.studentId <= 0) {
@@ -319,11 +319,12 @@ private fun CalendarMessage(message: String) {
 private fun ScheduleCard(item: ScheduleWithSubject) {
     val schedule = item.schedule
     val colors = MaterialTheme.colorScheme
-    val (label, color) = when (schedule.status) {
-        ScheduleStatus.PENDING -> "Chờ xác nhận" to colors.tertiary
-        ScheduleStatus.CONFIRMED -> "Đã xác nhận" to colors.primary
-        ScheduleStatus.CANCELLED -> "Đã hủy" to colors.error
-        else -> schedule.status to colors.onSurfaceVariant
+    val label = ScheduleStatus.label(schedule.status)
+    val color = when (schedule.status) {
+        ScheduleStatus.PENDING -> colors.tertiary
+        ScheduleStatus.CONFIRMED -> colors.primary
+        ScheduleStatus.CANCELLED -> colors.error
+        else -> colors.onSurfaceVariant
     }
     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = colors.surfaceContainerLow)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

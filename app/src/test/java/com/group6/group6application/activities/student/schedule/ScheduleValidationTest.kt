@@ -57,9 +57,9 @@ class ScheduleValidationTest {
         val reversed = validInput(startTime = "10:01", endTime = "10:00")
 
         assertFalse(equal.isValid)
-        assertEquals("End time must be after start time.", equal.errors.endTime)
+        assertEquals("Giờ kết thúc phải sau giờ bắt đầu.", equal.errors.endTime)
         assertFalse(reversed.isValid)
-        assertEquals("End time must be after start time.", reversed.errors.endTime)
+        assertEquals("Giờ kết thúc phải sau giờ bắt đầu.", reversed.errors.endTime)
     }
 
     @Test

@@ -55,7 +55,6 @@ class AdminRepositoryTest {
 
     @Test
     fun failedProfileInsertRollsBackAccountInsert() = runBlocking {
-        // Simulate a failure after Account has been inserted, inside the same transaction.
         db.openHelper.writableDatabase.execSQL(
             "CREATE TRIGGER reject_student BEFORE INSERT ON Student BEGIN SELECT RAISE(ABORT, 'test failure'); END"
         )
@@ -169,7 +168,6 @@ class AdminRepositoryTest {
             action()
             fail("Expected validation failure")
         } catch (_: IllegalArgumentException) {
-            // Expected user-facing validation, not a database crash.
         }
     }
 }

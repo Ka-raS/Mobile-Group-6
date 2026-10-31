@@ -26,7 +26,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class CalendarScreenTest {
+class CalendarViewActivityTest {
     @get:Rule
     val compose = createComposeRule()
 
@@ -35,7 +35,6 @@ class CalendarScreenTest {
 
     @Before
     fun setUp(): Unit = runBlocking {
-        // An isolated database: no changes to the app's real accounts or schedules.
         db = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), AppDB::class.java).build()
         for (id in 1..2) {
             db.accountDao().insert(Account(id, "student$id", "test", Role.STUDENT))

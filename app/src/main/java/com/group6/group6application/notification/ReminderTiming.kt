@@ -25,6 +25,5 @@ internal fun reminderDelayMillis(
     if (schedule.status != ScheduleStatus.PENDING && schedule.status != ScheduleStatus.CONFIRMED) return null
     val start = studyStart(schedule, zone) ?: return null
     if (!start.isAfter(now)) return null
-    // Bookings made within 30 minutes of the start are reminded immediately.
     return Duration.between(now, start.minusSeconds(REMINDER_MINUTES * 60)).toMillis().coerceAtLeast(0)
 }

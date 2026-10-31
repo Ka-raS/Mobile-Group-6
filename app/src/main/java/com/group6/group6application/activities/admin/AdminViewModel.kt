@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/** Each navigation destination owns an instance; edits survive configuration changes. */
 class AdminViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = AdminRepository(AppDB.get(application))
     var error by mutableStateOf<String?>(null)
@@ -33,11 +32,11 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
 
     val students = repository.students.catch { failure ->
         if (failure is CancellationException) throw failure
-        error = "Unable to load students. Please go back and try again."
+        error = "Không thể tải danh sách sinh viên. Vui lòng quay lại và thử lại."
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
     val subjects = repository.subjects.catch { failure ->
         if (failure is CancellationException) throw failure
-        error = "Unable to load subjects. Please go back and try again."
+        error = "Không thể tải danh sách môn học. Vui lòng quay lại và thử lại."
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     fun editStudent(input: StudentInput) { studentInput = input; error = null }
@@ -80,9 +79,9 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
             } catch (failure: IllegalArgumentException) {
                 error = failure.message
             } catch (_: SQLiteConstraintException) {
-                error = "Code or username already exists, or related data has changed."
+                error = "Mã hoặc tên đăng nhập đã tồn tại, hoặc dữ liệu liên quan đã thay đổi."
             } catch (_: Exception) {
-                error = "Unable to save changes. Please try again."
+                error = "Không thể lưu thay đổi. Vui lòng thử lại."
             } finally {
                 busy = false
             }

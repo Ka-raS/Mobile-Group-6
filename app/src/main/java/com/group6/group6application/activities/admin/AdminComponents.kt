@@ -20,14 +20,13 @@ import java.util.Locale
 
 data class AdminRecord(val id: Int, val title: String, val subtitle: String, val details: List<Pair<String, String>>)
 
-/** Accent-insensitive search also works for Vietnamese names and the letter đ. */
 internal fun searchKey(value: String): String = Normalizer.normalize(value, Normalizer.Form.NFD)
     .replace(Regex("\\p{M}+"), "").lowercase(Locale.ROOT).replace('đ', 'd')
 
 @Composable
 fun AdminHeader(title: String, onBack: () -> Unit, enabled: Boolean = true) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        TextButton(onClick = onBack, enabled = enabled) { Text("Back") }
+        TextButton(onClick = onBack, enabled = enabled) { Text("Quay lại") }
         Text(title, style = MaterialTheme.typography.headlineSmall)
     }
 }
@@ -58,12 +57,12 @@ fun AdminListContent(
     val filtered = records?.filter { record ->
         searchKey(record.title + " " + record.subtitle + " " + record.details.joinToString(" ") { it.second }).contains(key)
     }
-    BackHandler(enabled = busy) { /* Finish the database operation before leaving. */ }
+    BackHandler(enabled = busy) { }
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         AdminHeader(title, onBack, !busy)
-        Button(onClick = onAdd, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("Add New") }
+        Button(onClick = onAdd, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("Thêm mới") }
         OutlinedTextField(
-            value = query, onValueChange = onQuery, label = { Text("Search") },
+            value = query, onValueChange = onQuery, label = { Text("Tìm kiếm") },
             placeholder = { Text(searchHint) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
         )
         AdminError(error)
@@ -71,9 +70,9 @@ fun AdminListContent(
         when {
             records == null && error == null -> CircularProgressIndicator()
             records == null -> Unit
-            filtered.isNullOrEmpty() -> Text(if (query.isBlank()) "No data yet. Tap Add New to get started." else "No matching results found.")
+            filtered.isNullOrEmpty() -> Text(if (query.isBlank()) "Chưa có dữ liệu. Nhấn Thêm mới để bắt đầu." else "Không tìm thấy kết quả phù hợp.")
             else -> {
-                Text("${filtered.size} ${if (filtered.size == 1) "result" else "results"}", style = MaterialTheme.typography.labelLarge)
+                Text("${filtered.size} kết quả", style = MaterialTheme.typography.labelLarge)
                 LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(filtered, key = { it.id }) { record ->
                         Card(Modifier.fillMaxWidth()) {
@@ -81,10 +80,10 @@ fun AdminListContent(
                                 Text(record.title, style = MaterialTheme.typography.titleMedium)
                                 Text(record.subtitle, style = MaterialTheme.typography.bodyMedium)
                                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                    TextButton(onClick = { detailId = record.id }, enabled = !busy) { Text("Details") }
-                                    TextButton(onClick = { onEdit(record.id) }, enabled = !busy) { Text("Edit") }
+                                    TextButton(onClick = { detailId = record.id }, enabled = !busy) { Text("Chi tiết") }
+                                    TextButton(onClick = { onEdit(record.id) }, enabled = !busy) { Text("Sửa") }
                                     TextButton(onClick = { deleteId = record.id }, enabled = !busy) {
-                                        Text("Delete", color = MaterialTheme.colorScheme.error)
+                                        Text("Xóa", color = MaterialTheme.colorScheme.error)
                                     }
                                 }
                             }
@@ -102,28 +101,27 @@ fun AdminListContent(
                     record.details.forEach { (label, value) ->
                         Column {
                             Text(label, style = MaterialTheme.typography.labelMedium)
-                            Text(value.ifBlank { "None" })
+                            Text(value.ifBlank { "Không có" })
                         }
                     }
                 }
             },
-            confirmButton = { TextButton(onClick = { detailId = null; onEdit(record.id) }) { Text("Edit") } },
-            dismissButton = { TextButton(onClick = { detailId = null }) { Text("Close") } },
+            confirmButton = { TextButton(onClick = { detailId = null; onEdit(record.id) }) { Text("Sửa") } },
+            dismissButton = { TextButton(onClick = { detailId = null }) { Text("Đóng") } },
         )
     }
     records?.find { it.id == deleteId }?.let { record ->
         AlertDialog(
-            onDismissRequest = { deleteId = null }, title = { Text("Delete ${record.title}?") },
+            onDismissRequest = { deleteId = null }, title = { Text("Xóa ${record.title}?") },
             text = { Text(deleteWarning) },
             confirmButton = {
                 TextButton(onClick = { deleteId = null; onDelete(record.id) }) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text("Xóa", color = MaterialTheme.colorScheme.error)
                 }
             },
-            dismissButton = { TextButton(onClick = { deleteId = null }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { deleteId = null }) { Text("Hủy") } },
         )
     }
-    // Do not restore a stale dialog if its record is removed by another operation.
     LaunchedEffect(records) {
         if (records != null) {
             if (records.none { it.id == detailId }) detailId = null
@@ -152,7 +150,7 @@ fun AdminFormContent(
         if (loaded) fields()
         AdminError(error)
         Button(onClick = onSave, enabled = loaded && !busy, modifier = Modifier.fillMaxWidth()) {
-            Text(if (busy) "Saving…" else "Save")
+            Text(if (busy) "Đang lưu…" else "Lưu")
         }
     }
 }
@@ -174,7 +172,7 @@ fun AdminField(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         visualTransformation = if (password && !showPassword) PasswordVisualTransformation() else VisualTransformation.None,
         trailingIcon = if (password) {
-            { TextButton(onClick = { showPassword = !showPassword }) { Text(if (showPassword) "Hide" else "Show") } }
+            { TextButton(onClick = { showPassword = !showPassword }) { Text(if (showPassword) "Ẩn" else "Hiện") } }
         } else null,
         modifier = Modifier.fillMaxWidth(),
     )

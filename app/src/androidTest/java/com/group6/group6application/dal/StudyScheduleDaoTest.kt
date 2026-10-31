@@ -22,7 +22,7 @@ class StudyScheduleDaoTest {
     private lateinit var scheduleDao: StudyScheduleDao
 
     @Before
-    fun createDatabase() = runBlocking {
+    fun createDatabase(): Unit = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         database = Room.inMemoryDatabaseBuilder(context, AppDB::class.java)
             .allowMainThreadQueries()
@@ -33,7 +33,7 @@ class StudyScheduleDaoTest {
         database.accountDao().insert(Account(2, "student-two", "password", Role.STUDENT))
         database.studentDao().insert(Student(1, "S001", "Student One", "one@example.com", "1", 1))
         database.studentDao().insert(Student(2, "S002", "Student Two", "two@example.com", "2", 2))
-        database.subjectDao().insert(Subject(1, "MOB101", "Mobile Programming", "", 3))
+        database.subjectDao().insert(Subject(1, "MOB101", "Lập trình di động", "", 3))
     }
 
     @After

@@ -49,7 +49,6 @@ class ReminderTimingTest {
     @Test
     fun reminderCanCrossMidnightAndYearBoundary() {
         val session = schedule.copy(studyDate = "2027-01-01", startTime = "00:15")
-        // 23:30 on December 31 in Vietnam; reminder is due at 23:45.
         assertEquals(900_000L, reminderDelayMillis(session, Instant.parse("2026-12-31T16:30:00Z"), zone))
     }
 }

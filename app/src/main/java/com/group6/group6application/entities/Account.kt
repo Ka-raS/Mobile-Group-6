@@ -14,6 +14,13 @@ object ScheduleStatus {
     const val CONFIRMED = "Confirmed"
     const val CANCELLED = "Cancelled"
     val ALL = listOf(PENDING, CONFIRMED, CANCELLED)
+
+    fun label(status: String): String = when (status) {
+        PENDING -> "Chờ xác nhận"
+        CONFIRMED -> "Đã xác nhận"
+        CANCELLED -> "Đã hủy"
+        else -> status
+    }
 }
 
 @Entity(tableName = "Account", indices = [Index(value = ["username"], unique = true)])

@@ -14,8 +14,8 @@ fun StudentListActivity(onBack: () -> Unit, onAdd: () -> Unit, onEdit: (Int) -> 
     val records = remember(students) {
         students?.map {
             AdminRecord(it.id, it.fullname, "${it.studentCode} • ${it.email}", listOf(
-                "Student Code" to it.studentCode, "Full Name" to it.fullname,
-                "Email" to it.email, "Phone Number" to it.phone,
+                "Mã sinh viên" to it.studentCode, "Họ tên" to it.fullname,
+                "Email" to it.email, "Số điện thoại" to it.phone,
             ))
         }
     }
@@ -27,9 +27,9 @@ private fun StudentListContent(
     records: List<AdminRecord>?, query: String, onQuery: (String) -> Unit, busy: Boolean, error: String?,
     onBack: () -> Unit, onAdd: () -> Unit, onEdit: (Int) -> Unit, onDelete: (Int) -> Unit,
 ) = AdminListContent(
-    title = "Student Management", records = records, query = query, onQuery = onQuery,
-    searchHint = "Code, name, email, phone number", busy = busy, error = error,
-    deleteWarning = "The student's login account and all associated study schedules will also be deleted. This action cannot be undone.",
+    title = "Quản lý sinh viên", records = records, query = query, onQuery = onQuery,
+    searchHint = "Mã, họ tên, email, số điện thoại", busy = busy, error = error,
+    deleteWarning = "Tài khoản đăng nhập và toàn bộ lịch học của sinh viên này cũng sẽ bị xóa. Không thể hoàn tác.",
     onBack = onBack, onAdd = onAdd, onEdit = onEdit, onDelete = onDelete,
 )
 

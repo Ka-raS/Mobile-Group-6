@@ -37,24 +37,25 @@ fun LoginActivity(onLoggedIn: (role: String) -> Unit) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    var loading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Study Schedule", style = MaterialTheme.typography.headlineMedium)
+        Text("Lịch học", style = MaterialTheme.typography.headlineMedium)
         OutlinedTextField(
             value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
+            onValueChange = { username = it; error = null },
+            label = { Text("Tên đăng nhập") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
+            onValueChange = { password = it; error = null },
+            label = { Text("Mật khẩu") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -63,22 +64,31 @@ fun LoginActivity(onLoggedIn: (role: String) -> Unit) {
         error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
         Button(
             onClick = {
+                loading = true
                 scope.launch {
-                    db.seedIfEmpty()
-                    val account = db.accountDao().login(username.trim(), password)
-                    if (account == null) {
-                        error = "Sai username hoặc password"
-                        return@launch
+                    try {
+                        db.seedIfEmpty()
+                        val account = db.accountDao().login(username.trim(), password)
+                        if (account == null) {
+                            error = "Sai tên đăng nhập hoặc mật khẩu"
+                            return@launch
+                        }
+                        val studentId = if (account.role == Role.STUDENT) {
+                            db.studentDao().getByAccountId(account.id)?.id ?: -1
+                        } else -1
+                        if (account.role == Role.STUDENT && studentId <= 0) {
+                            error = "Tài khoản chưa có hồ sơ sinh viên"
+                            return@launch
+                        }
+                        session.save(account, studentId)
+                        onLoggedIn(account.role)
+                    } finally {
+                        loading = false
                     }
-                    val studentId = if (account.role == Role.STUDENT) {
-                        db.studentDao().getByAccountId(account.id)?.id ?: -1
-                    } else -1
-                    session.save(account, studentId)
-                    onLoggedIn(account.role)
                 }
             },
-            enabled = username.isNotBlank() && password.isNotBlank(),
+            enabled = !loading && username.isNotBlank() && password.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
-        ) { Text("Login") }
+        ) { Text("Đăng nhập") }
     }
 }

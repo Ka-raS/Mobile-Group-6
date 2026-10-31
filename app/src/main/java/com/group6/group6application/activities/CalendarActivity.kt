@@ -1,9 +1,9 @@
 package com.group6.group6application.activities
 
 import androidx.compose.runtime.Composable
-import com.group6.group6application.activities.calendar.CalendarScreen
+import com.group6.group6application.activities.calendar.CalendarViewActivity
 
 @Composable
 fun CalendarActivity(onBack: () -> Unit) {
-    CalendarScreen(onBack)
+    CalendarViewActivity(onBack)
 }

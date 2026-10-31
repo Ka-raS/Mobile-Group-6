@@ -21,12 +21,12 @@ fun SubjectFormActivity(id: Int, onBack: () -> Unit, model: AdminViewModel = vie
 private fun SubjectFormContent(
     id: Int, input: SubjectInput, onInput: (SubjectInput) -> Unit, busy: Boolean, loaded: Boolean,
     error: String?, onBack: () -> Unit, onSave: () -> Unit,
-) = AdminFormContent(if (id == 0) "Add Subject" else "Edit Subject", busy, loaded, error, onBack, onSave) {
-    AdminField("Subject Code *", input.subjectCode, { onInput(input.copy(subjectCode = it)) }, !busy)
-    AdminField("Subject Name *", input.subjectName, { onInput(input.copy(subjectName = it)) }, !busy)
-    AdminField("Description", input.description, { onInput(input.copy(description = it)) }, !busy, multiline = true)
-    AdminField("Credits *", input.credits, { onInput(input.copy(credits = it)) }, !busy, KeyboardType.Number)
-    Text("Fields marked with * are required. Credits must be a positive integer.")
+) = AdminFormContent(if (id == 0) "Thêm môn học" else "Sửa môn học", busy, loaded, error, onBack, onSave) {
+    AdminField("Mã môn học *", input.subjectCode, { onInput(input.copy(subjectCode = it)) }, !busy)
+    AdminField("Tên môn học *", input.subjectName, { onInput(input.copy(subjectName = it)) }, !busy)
+    AdminField("Mô tả", input.description, { onInput(input.copy(description = it)) }, !busy, multiline = true)
+    AdminField("Số tín chỉ *", input.credits, { onInput(input.copy(credits = it)) }, !busy, KeyboardType.Number)
+    Text("Các trường có dấu * là bắt buộc. Số tín chỉ phải là số nguyên dương.")
 }
 
 @Preview(showBackground = true)

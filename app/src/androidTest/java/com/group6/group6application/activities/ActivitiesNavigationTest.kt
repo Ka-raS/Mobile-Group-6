@@ -34,8 +34,6 @@ class ActivitiesNavigationTest {
 
     @Before
     fun setUp() {
-        // Keep the real session untouched, suppress permission UI, and query an
-        // unused student ID so this navigation test never writes real schedules.
         SessionManager(isolatedContext).save(Account(2_000_000_000, "nav-test", "test", Role.STUDENT), 2_000_000_000)
         isolatedContext.getSharedPreferences("notification-settings", Context.MODE_PRIVATE)
             .edit().putBoolean("permission-requested", true).commit()
@@ -58,13 +56,13 @@ class ActivitiesNavigationTest {
                 Group6ApplicationTheme(dynamicColor = false) { AppNavHost() }
             }
         }
-        compose.onNodeWithText("Student Home").assertIsDisplayed()
-        compose.onNodeWithText("Calendar").performClick()
+        compose.onNodeWithText("Trang sinh viên").assertIsDisplayed()
+        compose.onNodeWithText("Lịch").performClick()
         compose.onNodeWithText("Lịch học").assertIsDisplayed()
         compose.onNodeWithText("Ngày").assertIsDisplayed()
         compose.onNodeWithText("Tuần").assertIsDisplayed()
         compose.onNodeWithText("Tháng").assertIsDisplayed()
         compose.onNodeWithText("Quay lại").performClick()
-        compose.onNodeWithText("Student Home").assertIsDisplayed()
+        compose.onNodeWithText("Trang sinh viên").assertIsDisplayed()
     }
 }
