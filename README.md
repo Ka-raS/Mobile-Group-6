@@ -92,3 +92,46 @@ com.group6.group6application
 - Mỗi người làm trên branch riêng (`feat/core`, `feat/admin`, `feat/schedule`, `feat/calendar`), merge qua PR vào `main`
 - Chỉ Người 1 được sửa Entity, DAO và `build.gradle`. Ai cần thêm thì nhắn Người 1
 - Ngày lưu dạng `"yyyy-MM-dd"`, giờ lưu dạng `"HH:mm"` (chuỗi so sánh trực tiếp được, đỡ phải convert)
+
+## Calendar và Notification đã tích hợp — Người 4
+
+- Điểm vào là composable `activities/CalendarActivity.kt`, được gọi từ `activities/ScheduleActivity.kt`. Giao diện và cách tính khoảng ngày nằm trong `activities/calendar/CalendarScreen.kt` và `CalendarDates.kt`.
+- Toàn bộ navigation và theme dùng `activities/navigation/` và `activities/theme/`. Các bản sao trong package `ui/` cũ đã được bỏ.
+- Calendar đọc `StudyScheduleDao.getInRange()` theo `SessionManager.studentId`, hiển thị Ngày/Tuần/Tháng và tự cập nhật từ Room.
+- `notification/StudentNotificationSetup.kt` được gắn vào `activities/navigation/AppNavHost.kt`: tạo channel, hỏi quyền thông báo trên Android 13+, khôi phục nhắc khi đăng nhập/quay lại app và sau khi cấp quyền. Logout hủy các nhắc và thông báo đang hiển thị.
+- Nhắc lịch `Pending`/`Confirmed` trước 30 phút. Nếu còn dưới 30 phút thì nhắc ngay; lịch đã bắt đầu, đã xóa hoặc `Cancelled` không phát nhắc cũ. Worker đọc lại Room và kiểm tra đúng sinh viên trước khi gửi.
+- Mỗi lịch có một công việc WorkManager riêng; sửa sẽ thay thế nhắc cũ. Múi giờ dùng theo thiết bị. WorkManager có thể gửi muộn do điều kiện hệ thống, không phải báo thức chính xác đến từng phút.
+- Nếu từ chối quyền thông báo, có thể bật lại trong Cài đặt ứng dụng → Thông báo.
+
+### Người 3 gọi sau khi ghi Room thành công
+
+Các lệnh DAO chạy trong coroutine; truyền đúng ID lịch do Room cấp.
+
+```kotlin
+// Tạo lịch:
+val id = db.studyScheduleDao().insert(draft).toInt()
+NotificationScheduler.schedule(context, draft.copy(id = id))
+
+// Sửa thông tin hoặc đổi trạng thái (kể cả Cancelled):
+db.studyScheduleDao().update(updated)
+NotificationScheduler.notifyChanged(context, updated)
+
+// Xóa lịch, giữ bản ghi cũ để mô tả thông báo:
+db.studyScheduleDao().delete(oldSchedule)
+NotificationScheduler.notifyDeleted(context, oldSchedule)
+
+// Chỉ hủy nhắc, không phát thông báo thay đổi:
+NotificationScheduler.cancel(context, scheduleId)
+```
+
+`notifyChanged()` tự đặt lại/hủy nhắc và thông báo thay đổi. `schedule()` chỉ đặt nhắc. Các hàm trả về `Operation`, không cần chờ chặn UI. Form đặt/sửa lịch vẫn là khung để Người 3 hoàn thiện và nối các lệnh trên.
+
+### Kiểm tra và demo
+
+```powershell
+.\gradlew.bat :app:assembleDebug :app:testDebugUnitTest
+# Cần kết nối máy ảo hoặc điện thoại:
+.\gradlew.bat :app:connectedDebugAndroidTest :app:lintDebug
+```
+
+Đăng nhập `student1/123456` → Calendar. Database ban đầu chưa có lịch mẫu. Sau khi tích hợp form, tạo lịch bắt đầu sau 5–10 phút để thử nhắc ngay; sửa/hủy/xóa lịch để thử thông báo thay đổi và hủy nhắc.
