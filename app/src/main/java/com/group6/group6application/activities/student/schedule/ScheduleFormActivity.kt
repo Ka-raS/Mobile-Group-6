@@ -68,7 +68,7 @@ private const val SAVE_TAG = "schedule_form_save"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleFormScreen(
+fun ScheduleFormActivity(
     isEditing: Boolean,
     subjects: List<Subject>,
     selectedSubjectId: Int?,

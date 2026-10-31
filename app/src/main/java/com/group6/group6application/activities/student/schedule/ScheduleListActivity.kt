@@ -50,7 +50,7 @@ import com.group6.group6application.entities.StudySchedule
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleListScreen(
+fun ScheduleListActivity(
     schedules: List<ScheduleWithSubject>,
     query: String,
     selectedStatus: String?,

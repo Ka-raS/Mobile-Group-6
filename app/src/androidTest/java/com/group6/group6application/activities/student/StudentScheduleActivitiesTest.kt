@@ -11,15 +11,15 @@ import com.group6.group6application.entities.ScheduleWithSubject
 import com.group6.group6application.entities.StudySchedule
 import com.group6.group6application.entities.Subject
 import com.group6.group6application.activities.student.schedule.ScheduleFormFieldErrors
-import com.group6.group6application.activities.student.schedule.ScheduleFormScreen
-import com.group6.group6application.activities.student.schedule.ScheduleListScreen
+import com.group6.group6application.activities.student.schedule.ScheduleFormActivity
+import com.group6.group6application.activities.student.schedule.ScheduleListActivity
 import com.group6.group6application.activities.theme.Group6ApplicationTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-class StudentScheduleScreensTest {
+class StudentScheduleActivitiesTest {
     @get:Rule
     val composeRule = createComposeRule()
 
@@ -30,7 +30,7 @@ class StudentScheduleScreensTest {
 
         composeRule.setContent {
             Group6ApplicationTheme {
-                StudentHomeScreen(
+                StudentHomeActivity(
                     username = "student1",
                     onSchedules = { schedulesOpened = true },
                     onBook = { bookingOpened = true },
@@ -55,7 +55,7 @@ class StudentScheduleScreensTest {
 
         composeRule.setContent {
             Group6ApplicationTheme {
-                ScheduleListScreen(
+                ScheduleListActivity(
                     schedules = emptyList(),
                     query = "",
                     selectedStatus = null,
@@ -88,7 +88,7 @@ class StudentScheduleScreensTest {
 
         composeRule.setContent {
             Group6ApplicationTheme {
-                ScheduleListScreen(
+                ScheduleListActivity(
                     schedules = listOf(
                         ScheduleWithSubject(schedule, "MOB101", "Mobile Programming")
                     ),
@@ -120,7 +120,7 @@ class StudentScheduleScreensTest {
 
         composeRule.setContent {
             Group6ApplicationTheme {
-                ScheduleFormScreen(
+                ScheduleFormActivity(
                     isEditing = false,
                     subjects = listOf(Subject(1, "MOB101", "Mobile Programming", "", 3)),
                     selectedSubjectId = null,

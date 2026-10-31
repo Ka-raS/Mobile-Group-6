@@ -14,12 +14,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.group6.group6application.activities.navigation.Routes
-import com.group6.group6application.activities.student.StudentHomeScreen
+import com.group6.group6application.activities.student.StudentHomeActivity
 import com.group6.group6application.activities.student.schedule.ScheduleFormEvent
-import com.group6.group6application.activities.student.schedule.ScheduleFormScreen
+import com.group6.group6application.activities.student.schedule.ScheduleFormActivity
 import com.group6.group6application.activities.student.schedule.ScheduleFormViewModel
 import com.group6.group6application.activities.student.schedule.ScheduleListEvent
-import com.group6.group6application.activities.student.schedule.ScheduleListScreen
+import com.group6.group6application.activities.student.schedule.ScheduleListActivity
 import com.group6.group6application.activities.student.schedule.ScheduleListViewModel
 import com.group6.group6application.dal.SessionManager
 
@@ -27,7 +27,7 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController, onLogout: () 
     composable(Routes.STUDENT_HOME) {
         val context = LocalContext.current
         val session = remember(context) { SessionManager(context) }
-        StudentHomeScreen(
+        StudentHomeActivity(
             username = session.username,
             onSchedules = { navController.navigate(Routes.STUDENT_SCHEDULES) },
             onBook = { navController.navigate(Routes.studentScheduleForm()) },
@@ -52,7 +52,7 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController, onLogout: () 
         val stateError = state.errorMessage?.takeUnless {
             stateErrorDismissed || !state.sessionValid
         }
-        ScheduleListScreen(
+        ScheduleListActivity(
             schedules = state.schedules,
             query = state.query,
             selectedStatus = state.statusFilter,
@@ -92,7 +92,7 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController, onLogout: () 
         }
 
         val visibleMessage = transientMessage ?: state.errorMessage
-        ScheduleFormScreen(
+        ScheduleFormActivity(
             isEditing = state.isEditing,
             subjects = state.subjects,
             selectedSubjectId = state.selectedSubjectId,
