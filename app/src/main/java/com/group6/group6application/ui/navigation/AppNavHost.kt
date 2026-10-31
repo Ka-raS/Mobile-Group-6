@@ -6,8 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.group6.group6application.data.SessionManager
-import com.group6.group6application.data.entity.Role
+import com.group6.group6application.dal.SessionManager
+import com.group6.group6application.entities.Role
 import com.group6.group6application.ui.admin.adminGraph
 import com.group6.group6application.ui.auth.LoginScreen
 import com.group6.group6application.ui.student.studentGraph

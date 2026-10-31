@@ -22,15 +22,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.group6.group6application.data.AppDatabase
-import com.group6.group6application.data.SessionManager
-import com.group6.group6application.data.entity.Role
+import com.group6.group6application.dal.AppDB
+import com.group6.group6application.dal.SessionManager
+import com.group6.group6application.entities.Role
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(onLoggedIn: (role: String) -> Unit) {
     val context = LocalContext.current
-    val db = remember { AppDatabase.get(context) }
+    val db = remember { AppDB.get(context) }
     val session = remember { SessionManager(context) }
     val scope = rememberCoroutineScope()
 

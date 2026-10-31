@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-/** Temporary screen until the real one is implemented. Each button is (label, onClick). */
 @Composable
 fun PlaceholderScreen(title: String, vararg buttons: Pair<String, () -> Unit>) {
     Column(

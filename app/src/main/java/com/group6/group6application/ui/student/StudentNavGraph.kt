@@ -9,8 +9,6 @@ import com.group6.group6application.ui.navigation.PlaceholderScreen
 import com.group6.group6application.ui.navigation.Routes
 import com.group6.group6application.ui.student.calendar.CalendarScreen
 
-// Người 3: replace the PlaceholderScreens with real screens in ui/student/schedule.
-// Logged-in student: SessionManager(context).studentId
 fun NavGraphBuilder.studentGraph(navController: NavHostController, onLogout: () -> Unit) {
     composable(Routes.STUDENT_HOME) {
         PlaceholderScreen(
@@ -28,7 +26,6 @@ fun NavGraphBuilder.studentGraph(navController: NavHostController, onLogout: () 
         val id = it.arguments?.getInt("id") ?: 0
         PlaceholderScreen("Schedule form (id=$id)", "Back" to { navController.popBackStack() })
     }
-    // Người 4 owns CalendarScreen
     composable(Routes.STUDENT_CALENDAR) {
         CalendarScreen(onBack = { navController.popBackStack() })
     }

@@ -8,7 +8,6 @@ import androidx.navigation.navArgument
 import com.group6.group6application.ui.navigation.PlaceholderScreen
 import com.group6.group6application.ui.navigation.Routes
 
-// Người 2: replace the PlaceholderScreens with real screens in ui/admin/student and ui/admin/subject.
 fun NavGraphBuilder.adminGraph(navController: NavHostController, onLogout: () -> Unit) {
     composable(Routes.ADMIN_HOME) {
         PlaceholderScreen(
