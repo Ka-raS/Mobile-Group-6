@@ -1,4 +1,4 @@
-package com.group6.group6application.ui.navigation
+package com.group6.group6application.activities.navigation
 
 object Routes {
     const val LOGIN = "login"

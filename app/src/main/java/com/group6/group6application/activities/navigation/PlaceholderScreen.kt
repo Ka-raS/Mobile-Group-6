@@ -1,4 +1,4 @@
-package com.group6.group6application.ui.navigation
+package com.group6.group6application.activities.navigation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

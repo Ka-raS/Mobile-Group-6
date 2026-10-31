@@ -1,4 +1,4 @@
-package com.group6.group6application.ui.theme
+package com.group6.group6application.activities.theme
 
 import android.app.Activity
 import android.os.Build

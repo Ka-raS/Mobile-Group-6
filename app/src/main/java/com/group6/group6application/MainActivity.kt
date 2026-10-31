@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.group6.group6application.ui.navigation.AppNavHost
-import com.group6.group6application.ui.theme.Group6ApplicationTheme
+import com.group6.group6application.activities.navigation.AppNavHost
+import com.group6.group6application.activities.theme.Group6ApplicationTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

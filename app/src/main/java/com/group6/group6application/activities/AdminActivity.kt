@@ -1,12 +1,12 @@
-package com.group6.group6application.ui.admin
+package com.group6.group6application.activities
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.group6.group6application.ui.navigation.PlaceholderScreen
-import com.group6.group6application.ui.navigation.Routes
+import com.group6.group6application.activities.navigation.PlaceholderScreen
+import com.group6.group6application.activities.navigation.Routes
 
 fun NavGraphBuilder.adminGraph(navController: NavHostController, onLogout: () -> Unit) {
     composable(Routes.ADMIN_HOME) {
